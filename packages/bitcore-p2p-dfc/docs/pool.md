@@ -6,8 +6,8 @@ The quickest way to get connected is to run the following:
 
 ```javascript
 
-var Pool = require('bitcore-p2p').Pool;
-var Networks = require('bitcore-lib').Networks;
+var Pool = require('bitcore-p2p-dfc').Pool;
+var Networks = require('bitcore-lib-dfc').Networks;
 
 var pool = new Pool({network: Networks.livenet});
 

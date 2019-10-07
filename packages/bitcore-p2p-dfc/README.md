@@ -6,20 +6,20 @@
 
 **The peer-to-peer networking protocol for BTC.**
 
-`bitcore-p2p` adds [Bitcoin protocol](https://en.bitcoin.it/wiki/Protocol_documentation) support for Bitcore.
+`bitcore-p2p-dfc` adds [Bitcoin protocol](https://en.bitcoin.it/wiki/Protocol_documentation) support for Bitcore.
 
 See [the main bitcore repo](https://github.com/bitpay/bitcore) for more information.
 
 ## Getting Started
 
 ```sh
-npm install bitcore-p2p
+npm install bitcore-p2p-dfc
 ```
 
 In order to connect to the Bitcoin network, you'll need to know the IP address of at least one node of the network, or use [Pool](./docs/pool.md) to discover peers using a DNS seed.
 
 ```javascript
-var Peer = require('bitcore-p2p').Peer;
+var Peer = require('bitcore-p2p-dfc').Peer;
 
 var peer = new Peer({host: '127.0.0.1'});
 
