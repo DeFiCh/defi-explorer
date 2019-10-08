@@ -12,3 +12,15 @@
   https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html
 */
 declare module '*';
+
+export interface ProcessEnv {
+  [key: string]: string | undefined
+}
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      NODE_ENV: 'development' | 'production';
+    }
+  }
+}
