@@ -9,7 +9,7 @@ var Hash = require('../crypto/hash');
 var JSUtil = require('../util/js');
 var $ = require('../util/preconditions');
 
-var GENESIS_BITS = 0x1d00ffff;
+var GENESIS_BITS = 0x1e0fffff;
 
 /**
  * Instantiate a BlockHeader from a Buffer, JSON object, or Object with
@@ -31,6 +31,7 @@ var BlockHeader = function BlockHeader(arg) {
   this.timestamp = info.time;
   this.bits = info.bits;
   this.nonce = info.nonce;
+  this.sig = info.sig;
 
   if (info.hash) {
     $.checkState(
@@ -83,7 +84,8 @@ BlockHeader._fromObject = function _fromObject(data) {
     time: data.time,
     timestamp: data.time,
     bits: data.bits,
-    nonce: data.nonce
+    nonce: data.nonce,
+    sig: data.sig,
   };
   return info;
 };
@@ -142,6 +144,7 @@ BlockHeader._fromBufferReader = function _fromBufferReader(br) {
   info.time = br.readUInt32LE();
   info.bits = br.readUInt32LE();
   info.nonce = br.readUInt32LE();
+  info.sig = br.read(66);
   return info;
 };
 
@@ -165,7 +168,8 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
     merkleRoot: BufferUtil.reverse(this.merkleRoot).toString('hex'),
     time: this.time,
     bits: this.bits,
-    nonce: this.nonce
+    nonce: this.nonce,
+    sig: this.sig,
   };
 };
 
@@ -197,6 +201,7 @@ BlockHeader.prototype.toBufferWriter = function toBufferWriter(bw) {
   bw.writeUInt32LE(this.time);
   bw.writeUInt32LE(this.bits);
   bw.writeUInt32LE(this.nonce);
+  bw.write(this.sig);
   return bw;
 };
 
