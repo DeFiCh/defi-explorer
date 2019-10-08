@@ -27,7 +27,8 @@ export class ApiProvider {
   });
   public ratesAPI = {
     btc: 'https://bitpay.com/api/rates',
-    bch: 'https://bitpay.com/api/rates/bch'
+    bch: 'https://bitpay.com/api/rates/bch',
+    dfc: 'https://bitpay.com/api/rates/dfc',
   };
 
   constructor(
