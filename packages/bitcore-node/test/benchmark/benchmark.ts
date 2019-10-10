@@ -57,7 +57,8 @@ function generateBlock(blockSizeMb: number, previousBlock?: BitcoinBlockType): B
           bits: parseInt('207fffff', 16),
           difficulty: 4.656542373906925e-10,
           chainwork: '0000000000000000000000000000000000000000000000000000000000000a98',
-          prevHash: prevHash
+          prevHash: prevHash,
+          minedBy: '',
         };
       }
     }
