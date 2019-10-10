@@ -31,10 +31,12 @@ services:
     # network_mode: host
     networks:
       - default
-    command: ["npm", "run", "insight-previous"]
+    command: ["npm", "run", "insight-previous:prod"]
     ports:
       - 8200:8200
+      - 5000:5000
     environment:
+      - ENV=prod
       - NETWORK=testnet
       - CHAIN=DFC
       - API_PREFIX=http://127.0.0.1:3000/api
