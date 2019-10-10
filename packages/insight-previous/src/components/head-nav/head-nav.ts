@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import * as bitcoreLib from 'bitcore-lib';
 import * as bitcoreLibCash from 'bitcore-lib-cash';
+import * as bitcoreLibDfc from 'bitcore-lib-dfc';
 import {
   ActionSheetController,
   App,
@@ -151,7 +152,10 @@ export class HeadNavComponent implements OnInit {
     popover.onDidDismiss(data => {
       if (!data) {
         return;
-      } else if (data.chainNetwork !== this.config) {
+      } else if (
+          data.chainNetwork.chain !== this.config.chain ||
+          data.chainNetwork.network !== this.config.network
+      ) {
         this.apiProvider.changeNetwork(data.chainNetwork);
         this.config = this.apiProvider.getConfig();
         this.setCurrency(data.currencySymbol);
@@ -163,7 +167,7 @@ export class HeadNavComponent implements OnInit {
   }
 
   private setCurrency(currencySymbol) {
-    this.currencyProvider.setCurrency(currencySymbol);
+    this.currencyProvider.setCurrency(this.chainNetwork, currencySymbol);
     this.priceProvider.setCurrency(currencySymbol);
   }
 
@@ -173,7 +177,7 @@ export class HeadNavComponent implements OnInit {
 
   public extractAddress(address: string): string {
     const extractedAddress = address
-      .replace(/^(bitcoincash:|bchtest:|bitcoin:)/i, '')
+      .replace(/^(defichain:|bitcoincash:|bchtest:|bitcoin:)/i, '')
       .replace(/\?.*/, '');
     return extractedAddress || address;
   }
@@ -208,6 +212,10 @@ export class HeadNavComponent implements OnInit {
       return this.isValidBitcoinMainnetAddress(addr);
     } else if (coin.toLowerCase() === 'btc' && network === 'testnet') {
       return this.isValidBitcoinTestnetAddress(addr);
+    } else if (coin.toLowerCase() === 'dfc' && network === 'mainnet') {
+      return this.isValidDefichainMainnetAddress(addr);
+    } else if (coin.toLowerCase() === 'dfc' && network === 'testnet') {
+      return this.isValidDefichainTestnetAddress(addr);
     } else if (coin.toLowerCase() === 'bch' && network === 'mainnet') {
       return (
         this.isValidBitcoinCashMainnetAddress(addr) ||
@@ -221,6 +229,13 @@ export class HeadNavComponent implements OnInit {
   }
   private isValidBitcoinTestnetAddress(data: string): boolean {
     return !!bitcoreLib.Address.isValid(data, 'testnet');
+  }
+
+  private isValidDefichainMainnetAddress(data: string): boolean {
+    return !!bitcoreLibDfc.Address.isValid(data, 'mainnet');
+  }
+  private isValidDefichainTestnetAddress(data: string): boolean {
+    return !!bitcoreLibDfc.Address.isValid(data, 'testnet');
   }
 
   private isValidBitcoinCashLegacyMainnetAddress(data: string): boolean {

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as bitcoreLib from 'bitcore-lib';
 import * as bitcoreLibCash from 'bitcore-lib-cash';
+import * as bitcoreLibDfc from 'bitcore-lib-dfc';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -78,6 +79,10 @@ export class SearchProvider {
       return this.isValidBitcoinMainnetAddress(addr);
     } else if (coin.toLowerCase() === 'btc' && network === 'testnet') {
       return this.isValidBitcoinTestnetAddress(addr);
+    } else if (coin.toLowerCase() === 'dfc' && network === 'mainnet') {
+      return this.isValidDefichainMainnetAddress(addr);
+    } else if (coin.toLowerCase() === 'dfc' && network === 'testnet') {
+      return this.isValidDefichainTestnetAddress(addr);
     } else if (coin.toLowerCase() === 'bch' && network === 'mainnet') {
       return (
         this.isValidBitcoinCashMainnetAddress(addr) ||
@@ -89,8 +94,16 @@ export class SearchProvider {
   private isValidBitcoinMainnetAddress(data: string): boolean {
     return !!bitcoreLib.Address.isValid(data, 'mainnet');
   }
+
   private isValidBitcoinTestnetAddress(data: string): boolean {
     return !!bitcoreLib.Address.isValid(data, 'testnet');
+  }
+
+  private isValidDefichainMainnetAddress(data: string): boolean {
+    return !!bitcoreLibDfc.Address.isValid(data, 'mainnet');
+  }
+  private isValidDefichainTestnetAddress(data: string): boolean {
+    return !!bitcoreLibDfc.Address.isValid(data, 'testnet');
   }
 
   private isValidBitcoinCashLegacyMainnetAddress(data: string): boolean {
@@ -107,7 +120,7 @@ export class SearchProvider {
 
   private extractAddress(address: string): string {
     const extractedAddress = address
-      .replace(/^(bitcoincash:|bchtest:|bitcoin:)/i, '')
+      .replace(/^(defichain:|bitcoincash:|bchtest:|bitcoin:)/i, '')
       .replace(/\?.*/, '');
     return extractedAddress || address;
   }
