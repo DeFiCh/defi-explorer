@@ -8,6 +8,9 @@ var Network = require('./networks');
 var _ = require('lodash');
 var $ = require('./util/preconditions');
 
+var EC = require('elliptic').ec;
+var ec = new EC('secp256k1');
+
 /**
  * Instantiate a PublicKey from a {@link PrivateKey}, {@link Point}, `string`, or `Buffer`.
  *
@@ -387,6 +390,14 @@ PublicKey.prototype.toString = function() {
 PublicKey.prototype.inspect = function() {
   return '<PublicKey: ' + this.toString() +
     (this.compressed ? '' : ', uncompressed') + '>';
+};
+
+PublicKey.recoverPubKey = function(hash, sig) {
+  var pubKeyRecovered = ec.recoverPubKey(hash, sig, sig.recoveryParam, 'hex');
+
+  if (ec.verify(hash, sig, pubKeyRecovered)) {
+    return new PublicKey(pubKeyRecovered);
+  }
 };
 
 
