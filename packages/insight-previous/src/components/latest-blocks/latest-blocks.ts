@@ -115,4 +115,12 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     clearInterval(this.reloadInterval);
   }
+
+  public goToAddress(addrStr: string): void {
+    this.redirProvider.redir('address', {
+      addrStr,
+      chain: this.apiProvider.networkSettings.value.selectedNetwork.chain,
+      network: this.apiProvider.networkSettings.value.selectedNetwork.network
+    });
+  }
 }
