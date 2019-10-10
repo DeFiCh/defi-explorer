@@ -156,9 +156,9 @@ var livenet = get('livenet');
 addNetwork({
   name: 'testnet',
   alias: 'test',
-  pubkeyhash: 0x6f,
+  pubkeyhash: 0xf,
   privatekey: 0xef,
-  scripthash: 0xc4,
+  scripthash: 0x80,
   xpubkey: 0x043587cf,
   xprivkey: 0x04358394,
   networkMagic: 0x0b110907,
