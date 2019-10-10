@@ -11,4 +11,4 @@ module.exports = {
     lib: require('bitcore-lib-dfc'),
     p2p: require('bitcore-p2p-dfc'),
   },
-}
+};

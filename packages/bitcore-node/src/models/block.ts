@@ -12,6 +12,8 @@ import { EventStorage } from './events';
 import config from '../config';
 import { StorageService } from '../services/storage';
 
+const Chain = require('../chain');
+
 export { IBlock };
 
 @LoggifyClass
@@ -131,6 +133,15 @@ export class BlockModel extends BaseModel<IBlock> {
     const height = (previousBlock && previousBlock.height + 1) || 1;
     logger.debug('Setting blockheight', height);
 
+    let minedBy = '';
+
+    if (header.minedBy) {
+      const { lib: { Address, PublicKey } } = Chain[chain];
+      const pubKey = PublicKey.fromString(header.minedBy, 'hex');
+
+      minedBy = Address.fromPublicKey(pubKey, network).toString(true);
+    }
+
     const convertedBlock: IBlock = {
       chain,
       network,
@@ -147,7 +158,8 @@ export class BlockModel extends BaseModel<IBlock> {
       transactionCount: block.transactions.length,
       size: block.toBuffer().length,
       reward: block.transactions[0].outputAmount,
-      processed: false
+      processed: false,
+      minedBy,
     };
     return {
       updateOne: {
@@ -245,7 +257,8 @@ export class BlockModel extends BaseModel<IBlock> {
       /*
        *isMainChain: block.mainChain,
        */
-      transactionCount: block.transactionCount
+      transactionCount: block.transactionCount,
+      minedBy: block.minedBy,
       /*
        *minedBy: BlockModel.getPoolInfo(block.minedBy)
        */
