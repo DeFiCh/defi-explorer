@@ -56,7 +56,7 @@ export class BlocksProvider {
   ) {}
 
   public toAppBlock(block: ApiBlock): AppBlock {
-    const difficulty: number = 0x1d00ffff / block.bits;
+    const difficulty: number = 0x1e0fffff / block.bits;
     return {
       height: block.height,
       confirmations: block.confirmations,
