@@ -143,7 +143,8 @@ describe('Block Model', function() {
           version: 536870912,
           merkleRoot: '08e23107e8449f02568d37d37aa76e840e55bbb5f100ed8ad257af303db88c08',
           bits: parseInt('207fffff', 16),
-          nonce: 2
+          nonce: 2,
+          minedBy: '',
         },
         chain: 'BTC',
         network: 'regtest'
