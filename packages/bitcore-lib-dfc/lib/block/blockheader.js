@@ -179,7 +179,7 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
     bits: this.bits,
     nonce: this.nonce,
     sig: this.sig,
-    minedBy: publicKey ? publicKey.toString() : '', // ? (new Address(publicKey)).toString() : ''
+    minedBy: publicKey ? publicKey.toString() : '',
   };
 };
 
