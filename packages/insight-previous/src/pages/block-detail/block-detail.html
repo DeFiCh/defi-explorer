@@ -51,8 +51,8 @@
                 </ion-item>
                 <ion-item>
                   Mined by
-                  <ion-note item-end *ngIf="block.poolInfo">
-                    <a href="{{ block.poolInfo.url }}">{{ block.poolInfo.poolName }}</a>
+                  <ion-note item-end *ngIf="block.minedBy">
+                    <a (click)="goToAddress(block.minedBy)">{{ block.minedBy }}</a>
                   </ion-note>
                 </ion-item>
                 <ion-item>

@@ -6,7 +6,7 @@
       <ion-col><b>Height</b></ion-col>
       <ion-col *ngIf="showTimeAs === 'age'"><b>Age</b></ion-col>
       <ion-col *ngIf="showTimeAs === 'timestamp'"><b>Timestamp</b></ion-col>
-      <ion-col text-right><b>Transactions</b></ion-col>
+      <ion-col><b>Transactions</b></ion-col>
       <ion-col hideWhen="portrait"><b>Mined By</b></ion-col>
       <ion-col text-right><b>Size</b></ion-col>
     </ion-row>
@@ -28,8 +28,8 @@
           {{ block.txlength }}
         </ion-col>
         <ion-col hideWhen="portrait">
-          <a *ngIf="block.poolInfo && block.poolInfo.poolName" href="{{ block.poolInfo.url }}">
-            {{ block.poolInfo.poolName }}
+          <a *ngIf="block.minedBy" (click)="goToAddress(block.minedBy)">
+            {{ block.minedBy }}
           </a>
         </ion-col>
         <ion-col text-right>

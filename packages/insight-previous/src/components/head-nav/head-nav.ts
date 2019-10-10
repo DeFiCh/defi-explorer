@@ -167,7 +167,7 @@ export class HeadNavComponent implements OnInit {
   }
 
   private setCurrency(currencySymbol) {
-    this.currencyProvider.setCurrency(this.config, currencySymbol);
+    this.currencyProvider.setCurrency(currencySymbol);
     this.priceProvider.setCurrency(currencySymbol);
   }
 

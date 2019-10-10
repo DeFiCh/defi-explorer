@@ -87,4 +87,12 @@ export class BlockDetailPage {
       network: this.chainNetwork.network
     });
   }
+
+  public goToAddress(addrStr: string): void {
+    this.redirProvider.redir('address', {
+      addrStr,
+      chain: this.chainNetwork.chain,
+      network: this.chainNetwork.network
+    });
+  }
 }
