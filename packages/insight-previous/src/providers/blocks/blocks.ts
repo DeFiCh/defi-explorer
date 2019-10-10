@@ -45,6 +45,7 @@ export interface AppBlock {
     url: string;
   };
   reward: number;
+  minedBy: string;
 }
 
 @Injectable()
@@ -79,7 +80,8 @@ export class BlocksProvider {
         poolName: block.minedBy,
         url: ''
       },
-      reward: block.reward
+      reward: block.reward,
+      minedBy: block.minedBy,
     };
   }
 
