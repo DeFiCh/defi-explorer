@@ -16,4 +16,5 @@ export type IBlock = {
   bits: number;
   reward: number;
   processed: boolean;
+  minedBy?: string;
 };

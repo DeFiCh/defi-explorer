@@ -7,6 +7,7 @@ export type BlockHeaderObj = {
   merkleRoot: string;
   bits: number;
   nonce: number;
+  minedBy: string;
 }
 export type BlockHeader = {
   toObject: () => BlockHeaderObj;

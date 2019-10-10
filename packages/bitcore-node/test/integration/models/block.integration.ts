@@ -189,7 +189,8 @@ describe('Block Model', function() {
         nextBlockHash: '',
         size: 264,
         bits: parseInt('207fffff', 16),
-        processed: true
+        processed: true,
+        minedBy: '',
       });
 
       await BlockStorage.handleReorg({
@@ -200,7 +201,8 @@ describe('Block Model', function() {
           version: 536870912,
           merkleRoot: '8c29860888b915715878b21ce14707a17b43f6c51dfb62a1e736e35bc5d8093f',
           bits: parseInt('207fffff', 16),
-          nonce: 3
+          nonce: 3,
+          minedBy: '',
         },
         chain: 'BTC',
         network: 'regtest'
@@ -218,7 +220,8 @@ describe('Block Model', function() {
           version: 536870912,
           merkleRoot: '8c29860888b915715878b21ce14707a17b43f6c51dfb62a1e736e35bc5d8093f',
           bits: parseInt('207fffff', 16),
-          nonce: 3
+          nonce: 3,
+          minedBy: '',
         },
         chain: 'BTC',
         network: 'regtest'
@@ -420,7 +423,8 @@ describe('Block Model', function() {
           version: 536870912,
           merkleRoot: '8c29860888b915715878b21ce14707a17b43f6c51dfb62a1e736e35bc5d8093f',
           bits: parseInt('207fffff', 16),
-          nonce: 3
+          nonce: 3,
+          minedBy: '',
         },
         chain: 'BTC',
         network: 'regtest'
