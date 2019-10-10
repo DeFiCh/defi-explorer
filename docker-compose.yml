@@ -2,26 +2,40 @@ version: '3'
 services:
   database:
     image: mongo:3.4-jessie
-    ports: 
+    # network_mode: host
+    networks:
+      - default
+    ports:
     - 27017:27017
-    volumes: 
-    - /data/db:/data/db
-    
+    volumes:
+    - /data/db2:/data/db
+
   bitcore-node:
     build: .
     image: bitcore-node
-    links:
-      - database
+    # network_mode: host
+    networks:
+      - default
+    command: ["npm", "run", "node"]
     ports:
-      - 8100:8100
       - 3000:3000
     environment:
       - DB_HOST=database
-    env_file: .env
+      - NETWORK=testnet
+      - CHAIN=DFC
+      - BITCORE_CONFIG_PATH=bitcore.config.json
 
-#insight:
-  #image: insight
-  #links:
-    #- bitcore-node
-  #environment:
-    #- API_URL=bitcore-node
+  insight:
+    build: .
+    image: insight
+    # network_mode: host
+    networks:
+      - default
+    command: ["npm", "run", "insight-previous"]
+    ports:
+      - 8200:8200
+    environment:
+      - NETWORK=testnet
+      - CHAIN=DFC
+      - API_PREFIX=http://127.0.0.1:3000/api
+      - BITCORE_CONFIG_PATH=bitcore.config.json
