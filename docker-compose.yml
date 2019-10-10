@@ -9,6 +9,7 @@ services:
     - 27017:27017
     volumes:
     - /data/db2:/data/db
+    restart: always
 
   bitcore-node:
     build: .
@@ -24,6 +25,9 @@ services:
       - NETWORK=testnet
       - CHAIN=DFC
       - BITCORE_CONFIG_PATH=bitcore.config.json
+    depends_on:
+      - database
+    restart: always
 
   insight:
     build: .
@@ -33,11 +37,13 @@ services:
       - default
     command: ["npm", "run", "insight-previous:prod"]
     ports:
-      - 8200:8200
-      - 5000:5000
+      - 8200:5000
     environment:
       - ENV=prod
       - NETWORK=testnet
       - CHAIN=DFC
       - API_PREFIX=http://127.0.0.1:3000/api
       - BITCORE_CONFIG_PATH=bitcore.config.json
+    depends_on:
+      - bitcore-node
+    restart: always
