@@ -18,13 +18,16 @@ COPY ./packages/bitcore-wallet/package.json ./packages/bitcore-wallet/package.js
 COPY ./packages/bitcore-wallet-client/package.json ./packages/bitcore-wallet-client/package.json
 COPY ./packages/bitcore-wallet-service/package.json ./packages/bitcore-wallet-service/package.json
 COPY ./packages/bitcore-node/package.json ./packages/bitcore-node/package.json
-COPY ./packages/insight/package.json ./packages/insight/package.json
+#COPY ./packages/insight/package.json ./packages/insight/package.json
+COPY ./packages/insight-previous/package.json ./packages/insight-previous/package.json
 
 RUN ./node_modules/.bin/lerna bootstrap
 
 COPY . .
-EXPOSE 3000
-EXPOSE 8100
-CMD ["./node_modules/.bin/lerna", "run", "start"]
+#EXPOSE 3000
+#EXPOSE 8100
+#CMD ["./node_modules/.bin/lerna", "run", "start"]
 #CMD ["npm", "--prefix=./packages/bitcore-node", "start"]
-#CMD ["npm", "--prefix=./packages/insight", "start"]
+#CMD ["npm", "--prefix=./packages/insight-previous", "start"]
+#CMD ["npm", "run", "node"]
+#CMD ["npm", "run", "insight-previous"]
