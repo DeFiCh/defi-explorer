@@ -9,6 +9,9 @@ var Hash = require('../crypto/hash');
 var JSUtil = require('../util/js');
 var $ = require('../util/preconditions');
 
+var Signature = require('../crypto/signature');
+var PublicKey = require('../publickey');
+
 var GENESIS_BITS = 0x1e0fffff;
 
 /**
@@ -145,6 +148,8 @@ BlockHeader._fromBufferReader = function _fromBufferReader(br) {
   info.bits = br.readUInt32LE();
   info.nonce = br.readUInt32LE();
   info.sig = br.read(66);
+  $.checkState(info.sig[0] === 65, 'signature size is wrong');
+
   return info;
 };
 
@@ -161,6 +166,10 @@ BlockHeader.fromBufferReader = function fromBufferReader(br) {
  * @returns {Object} - A plain object of the BlockHeader
  */
 BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObject() {
+  var sig = Signature.fromCompact(this.sig.slice(1));
+  sig.recoveryParam = (this.sig[1] - 27) & 3; // recid
+  var publicKey = PublicKey.recoverPubKey(this._getHashToSign(), sig);
+
   return {
     hash: this.hash,
     version: this.version,
@@ -170,6 +179,7 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
     bits: this.bits,
     nonce: this.nonce,
     sig: this.sig,
+    minedBy: publicKey ? publicKey.toString() : '', // ? (new Address(publicKey)).toString() : ''
   };
 };
 
@@ -244,6 +254,19 @@ BlockHeader.prototype._getHash = function hash() {
   return Hash.sha256sha256(buf);
 };
 
+BlockHeader.prototype._getHashToSign = function hashtosign() {
+  var bw = new BufferWriter();
+  bw.writeInt32LE(this.version);
+  bw.write(this.prevHash);
+  bw.write(this.merkleRoot);
+  bw.writeUInt32LE(this.time);
+  bw.writeUInt32LE(this.bits);
+  bw.writeUInt32LE(this.nonce);
+  var buf = bw.toBuffer();
+
+  return Hash.sha256sha256(buf);
+};
+
 var idProperty = {
   configurable: false,
   enumerable: true,
@@ -260,6 +283,22 @@ var idProperty = {
 };
 Object.defineProperty(BlockHeader.prototype, 'id', idProperty);
 Object.defineProperty(BlockHeader.prototype, 'hash', idProperty);
+
+var hashProperty = {
+  configurable: false,
+  enumerable: true,
+  /**
+   * @returns {string} - The big endian hash buffer of the header
+   */
+  get: function() {
+    if (!this._hash) {
+      this._hash = BufferReader(this._getHashToSign()).readReverse().toString('hex');
+    }
+    return this._hash;
+  },
+  set: _.noop
+};
+Object.defineProperty(BlockHeader.prototype, 'hashtosign', hashProperty);
 
 /**
  * @returns {Boolean} - If timestamp is not too far in the future
