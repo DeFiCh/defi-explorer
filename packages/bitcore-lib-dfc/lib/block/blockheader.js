@@ -33,7 +33,9 @@ var BlockHeader = function BlockHeader(arg) {
   this.time = info.time;
   this.timestamp = info.time;
   this.bits = info.bits;
-  this.nonce = info.nonce;
+  this.height = info.height;
+  this.mintedBlocks = info.mintedBlocks;
+  this.stakeModifier = info.stakeModifier;
   this.sig = info.sig;
 
   if (info.hash) {
@@ -73,23 +75,35 @@ BlockHeader._fromObject = function _fromObject(data) {
   $.checkArgument(data, 'data is required');
   var prevHash = data.prevHash;
   var merkleRoot = data.merkleRoot;
+  var stakeModifier = data.stakeModifier;
+
   if (_.isString(data.prevHash)) {
     prevHash = BufferUtil.reverse(Buffer.from(data.prevHash, 'hex'));
   }
+
   if (_.isString(data.merkleRoot)) {
     merkleRoot = BufferUtil.reverse(Buffer.from(data.merkleRoot, 'hex'));
   }
+
+  if (_.isString(data.stakeModifier)) {
+    stakeModifier = BufferUtil.reverse(Buffer.from(data.stakeModifier, 'hex'));
+  }
+
   var info = {
     hash: data.hash,
+    timestamp: data.time,
+    // --
     version: data.version,
     prevHash: prevHash,
     merkleRoot: merkleRoot,
     time: data.time,
-    timestamp: data.time,
     bits: data.bits,
-    nonce: data.nonce,
+    height: data.height,
+    mintedBlocks: data.mintedBlocks,
+    stakeModifier: stakeModifier,
     sig: data.sig,
   };
+
   return info;
 };
 
@@ -146,7 +160,9 @@ BlockHeader._fromBufferReader = function _fromBufferReader(br) {
   info.merkleRoot = br.read(32);
   info.time = br.readUInt32LE();
   info.bits = br.readUInt32LE();
-  info.nonce = br.readUInt32LE();
+  info.stakeModifier = br.read(32);
+  info.height = br.readUInt64LEBN();
+  info.mintedBlocks = br.readUInt64LEBN();
   info.sig = br.read(66);
   $.checkState(info.sig[0] === 65, 'signature size is wrong');
 
@@ -177,7 +193,9 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
     merkleRoot: BufferUtil.reverse(this.merkleRoot).toString('hex'),
     time: this.time,
     bits: this.bits,
-    nonce: this.nonce,
+    stakeModifier: BufferUtil.reverse(this.stakeModifier).toString('hex'),
+    height: this.height,
+    mintedBlocks: this.mintedBlocks,
     sig: this.sig,
     minedBy: publicKey ? publicKey.toString() : '',
   };
@@ -210,8 +228,11 @@ BlockHeader.prototype.toBufferWriter = function toBufferWriter(bw) {
   bw.write(this.merkleRoot);
   bw.writeUInt32LE(this.time);
   bw.writeUInt32LE(this.bits);
-  bw.writeUInt32LE(this.nonce);
+  bw.write(this.stakeModifier);
+  bw.writeUInt64LEBN(this.height);
+  bw.writeUInt64LEBN(this.mintedBlocks);
   bw.write(this.sig);
+
   return bw;
 };
 
