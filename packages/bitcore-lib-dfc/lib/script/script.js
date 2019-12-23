@@ -510,7 +510,7 @@ Script.prototype.isDataOut = function() {
     (this.chunks.length === 1 ||
       (this.chunks.length === 2 &&
         this.chunks[1].buf &&
-        this.chunks[1].buf.length <= Script.OP_RETURN_STANDARD_SIZE &&
+        // this.chunks[1].buf.length <= Script.OP_RETURN_STANDARD_SIZE &&
         this.chunks[1].length === this.chunks.len));
 };
 
