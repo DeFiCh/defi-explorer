@@ -86,7 +86,7 @@ describe('Address', function() {
 
   // testnet p2sh
   var P2SHTestnet = [
-    '2N7FuwuUuoTBrDFdrAZ9KxBmtqMLxce9i1C',
+    '773MiaEtQK2HAwWj55gyuRiU8tSwowRTTW',
     '2NEWDzHWwY5ZZp8CQWbB7ouNMLqCia6YRda',
     '2MxgPqX1iThW3oZVk9KoFcE5M4JpiETssVN',
     '2NB72XtkjpnATMggui83aEtPawyyKvnbX2o'

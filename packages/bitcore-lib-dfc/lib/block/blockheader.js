@@ -11,7 +11,7 @@ var $ = require('../util/preconditions');
 var Signature = require('../crypto/signature');
 var PublicKey = require('../publickey');
 
-var GENESIS_BITS = 0x1e0fffff;
+var GENESIS_BITS = 0x1d00ffff;
 
 /**
  * Instantiate a BlockHeader from a Buffer, JSON object, or Object with
@@ -75,22 +75,26 @@ BlockHeader._fromObject = function _fromObject(data) {
   var prevHash = data.prevHash;
   var merkleRoot = data.merkleRoot;
   var stakeModifier = data.stakeModifier;
+  var sig = data.sig;
 
   if (_.isString(data.prevHash)) {
-    prevHash = BufferUtil.reverse(Buffer.from(data.prevHash, 'hex'));
+    prevHash = Buffer.from(data.prevHash, 'hex');
   }
 
   if (_.isString(data.merkleRoot)) {
-    merkleRoot = BufferUtil.reverse(Buffer.from(data.merkleRoot, 'hex'));
+    merkleRoot = Buffer.from(data.merkleRoot, 'hex');
   }
 
   if (_.isString(data.stakeModifier)) {
-    stakeModifier = BufferUtil.reverse(Buffer.from(data.stakeModifier, 'hex'));
+    stakeModifier = Buffer.from(data.stakeModifier, 'hex');
+  }
+
+  if (_.isString(data.sig)) {
+    sig = Buffer.from(data.sig, 'hex');
   }
 
   var info = {
     hash: data.hash,
-    timestamp: data.time,
     // --
     version: data.version,
     prevHash: prevHash,
@@ -100,7 +104,7 @@ BlockHeader._fromObject = function _fromObject(data) {
     height: data.height,
     mintedBlocks: data.mintedBlocks,
     stakeModifier: stakeModifier,
-    sig: data.sig,
+    sig: sig,
   };
 
   return info;
@@ -163,7 +167,6 @@ BlockHeader._fromBufferReader = function _fromBufferReader(br) {
   info.height = br.readUInt64LEBN();
   info.mintedBlocks = br.readUInt64LEBN();
   info.sig = br.read(66);
-  $.checkState(info.sig[0] === 65, 'signature size is wrong');
 
   return info;
 };
@@ -195,7 +198,7 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
     stakeModifier: BufferUtil.reverse(this.stakeModifier).toString('hex'),
     height: this.height,
     mintedBlocks: this.mintedBlocks,
-    sig: this.sig,
+    sig: BufferUtil.reverse(this.sig).toString('hex'),
     minedBy: publicKey ? publicKey.toString() : '',
   };
 };

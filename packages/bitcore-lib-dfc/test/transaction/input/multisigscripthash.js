@@ -21,7 +21,7 @@ describe('MultiSigScriptHashInput', function() {
   var public1 = privateKey1.publicKey;
   var public2 = privateKey2.publicKey;
   var public3 = privateKey3.publicKey;
-  var address = new Address('33zbk2aSZYdNbRsMPPt6jgy6Kq1kQreqeb');
+  var address = new Address('7Grgx69MZJ4wDKRx1bBxLqTnU9T3quKW7n');
 
   var output = {
     address: '33zbk2aSZYdNbRsMPPt6jgy6Kq1kQreqeb',
