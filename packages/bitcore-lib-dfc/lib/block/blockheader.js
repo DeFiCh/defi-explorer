@@ -76,21 +76,31 @@ BlockHeader._fromObject = function _fromObject(data) {
   var merkleRoot = data.merkleRoot;
   var stakeModifier = data.stakeModifier;
   var sig = data.sig;
+  var height = data.height;
+  var mintedBlocks = data.mintedBlocks;
 
   if (_.isString(data.prevHash)) {
-    prevHash = Buffer.from(data.prevHash, 'hex');
+    prevHash = BufferUtil.reverse(Buffer.from(data.prevHash, 'hex'));
   }
 
   if (_.isString(data.merkleRoot)) {
-    merkleRoot = Buffer.from(data.merkleRoot, 'hex');
+    merkleRoot = BufferUtil.reverse(Buffer.from(data.merkleRoot, 'hex'));
   }
 
   if (_.isString(data.stakeModifier)) {
-    stakeModifier = Buffer.from(data.stakeModifier, 'hex');
+    stakeModifier = BufferUtil.reverse(Buffer.from(data.stakeModifier, 'hex'));
   }
 
   if (_.isString(data.sig)) {
     sig = Buffer.from(data.sig, 'hex');
+  }
+
+  if (_.isString(data.height) || _.isNumber(data.height)) {
+    height = new BN(data.height);
+  }
+
+  if (_.isString(data.mintedBlocks) || _.isNumber(data.mintedBlocks)) {
+    mintedBlocks = new BN(data.mintedBlocks);
   }
 
   var info = {
@@ -101,9 +111,9 @@ BlockHeader._fromObject = function _fromObject(data) {
     merkleRoot: merkleRoot,
     time: data.time,
     bits: data.bits,
-    height: data.height,
-    mintedBlocks: data.mintedBlocks,
     stakeModifier: stakeModifier,
+    height: height,
+    mintedBlocks: mintedBlocks,
     sig: sig,
   };
 
@@ -166,7 +176,7 @@ BlockHeader._fromBufferReader = function _fromBufferReader(br) {
   info.stakeModifier = br.read(32);
   info.height = br.readUInt64LEBN();
   info.mintedBlocks = br.readUInt64LEBN();
-  info.sig = br.read(66);
+  info.sig = br.readVarLengthBuffer();
 
   return info;
 };
@@ -184,9 +194,13 @@ BlockHeader.fromBufferReader = function fromBufferReader(br) {
  * @returns {Object} - A plain object of the BlockHeader
  */
 BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObject() {
-  var sig = Signature.fromCompact(this.sig.slice(1));
-  sig.recoveryParam = (this.sig[1] - 27) & 3; // recid
-  var publicKey = PublicKey.recoverPubKey(this._getHashToSign(), sig);
+  var publicKey = '';
+
+  if (this.sig.length > 0) {
+    var sig = Signature.fromCompact(this.sig);
+    sig.recoveryParam = (this.sig[0] - 27) & 3; // recid
+    publicKey = PublicKey.recoverPubKey(this._getHash(), sig);
+  }
 
   return {
     hash: this.hash,
@@ -196,9 +210,9 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
     time: this.time,
     bits: this.bits,
     stakeModifier: BufferUtil.reverse(this.stakeModifier).toString('hex'),
-    height: this.height,
-    mintedBlocks: this.mintedBlocks,
-    sig: BufferUtil.reverse(this.sig).toString('hex'),
+    height: this.height.toNumber(),
+    mintedBlocks: this.mintedBlocks.toNumber(),
+    sig: this.sig.toString('hex'),
     minedBy: publicKey ? publicKey.toString() : '',
   };
 };
@@ -233,7 +247,7 @@ BlockHeader.prototype.toBufferWriter = function toBufferWriter(bw) {
   bw.write(this.stakeModifier);
   bw.writeUInt64LEBN(this.height);
   bw.writeUInt64LEBN(this.mintedBlocks);
-  bw.write(this.sig);
+  bw.writeVarLengthBuff(this.sig);
 
   return bw;
 };
