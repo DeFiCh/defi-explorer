@@ -4,6 +4,7 @@ var bitcore = require('../..');
 var BN = require('../../lib/crypto/bn');
 var BufferReader = bitcore.encoding.BufferReader;
 var BufferWriter = bitcore.encoding.BufferWriter;
+var BufferUtil = require('../../lib/util/buffer');
 
 var BlockHeader = bitcore.BlockHeader;
 var fs = require('fs');
@@ -36,8 +37,8 @@ describe('BlockHeader', function() {
     time = data.time;
     bits = data.bits;
     stakeModifierbuf = new Buffer(data.stakeModifierhex, 'hex');
-    height = new BN(new Buffer(data.height, 'hex'), 10, 'le');
-    mintedBlocks = new BN(new Buffer(data.mintedBlocks, 'hex'), 10, 'le');
+    height = data.height;
+    mintedBlocks = data.mintedBlocks;
     sigbuf = new Buffer(data.sighex, 'hex');
     bh = new BlockHeader({
       version: version,
@@ -141,11 +142,11 @@ describe('BlockHeader', function() {
       var bh = BlockHeader.fromObject({
         hash: 'f3c21abad9ea295cc7c22c870e2950b85198c3d13cecbc02b6f01c33f22fbc6d',
         version: version,
-        prevHash: prevblockidbuf.toString('hex'),
-        merkleRoot: merklerootbuf.toString('hex'),
+        prevHash: BufferUtil.reverse(prevblockidbuf).toString('hex'),
+        merkleRoot: BufferUtil.reverse(merklerootbuf).toString('hex'),
         time: time,
         bits: bits,
-        stakeModifier: stakeModifierbuf.toString('hex'),
+        stakeModifier: BufferUtil.reverse(stakeModifierbuf).toString('hex'),
         height: height,
         mintedBlocks: mintedBlocks,
         sig: sigbuf.toString('hex'),
@@ -186,14 +187,14 @@ describe('BlockHeader', function() {
 
       var jsonString = JSON.stringify({
         version: version,
-        prevHash: prevblockidbuf,
-        merkleRoot: merklerootbuf,
+        prevHash: BufferUtil.reverse(prevblockidbuf).toString('hex'),
+        merkleRoot: BufferUtil.reverse(merklerootbuf).toString('hex'),
         time: time,
         bits: bits,
-        stakeModifier: stakeModifierbuf,
+        stakeModifier: BufferUtil.reverse(stakeModifierbuf).toString('hex'),
         height: height,
         mintedBlocks: mintedBlocks,
-        sig: sigbuf,
+        sig: sigbuf.toString('hex'),
       });
 
       var json = new BlockHeader(JSON.parse(jsonString));

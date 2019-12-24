@@ -41,6 +41,14 @@ BufferWriter.prototype.writeReverse = function(buf) {
   return this;
 };
 
+BufferWriter.prototype.writeVarLengthBuff = function(buf) {
+  assert(bufferUtil.isBuffer(buf));
+  var bufWithLen = Buffer.concat([BufferWriter.varintBufNum(buf.length), buf]);
+  this.bufs.push(bufWithLen);
+  this.bufLen += bufWithLen.length;
+  return this;
+};
+
 BufferWriter.prototype.writeUInt8 = function(n) {
   var buf = Buffer.alloc(1);
   buf.writeUInt8(n, 0);
