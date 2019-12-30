@@ -1160,4 +1160,49 @@ Script.prototype.getSignatureOperationsCount = function(accurate) {
   return n;
 };
 
+Script.prototype.isAnchor = function isAnchor() {
+  try {
+    if (this.isDataOut() && this.chunks[1]) {
+      var br = new BufferReader(this.chunks[1].buf);
+
+      if (!br.eof()) {
+        return br.readVarLengthBuffer().toString() === 'DfAf';
+      }
+    }
+  } catch(e) {}
+
+  return false;
+};
+
+/**
+ * Return Anchor instance
+ * @returns {string}
+ */
+Script.prototype.getAnchor = function getAnchor() {
+  var br = new BufferReader(this.chunks[1].buf);
+  br.set({ pos: 5 });
+  var anchor = {};
+
+  try {
+    if (!br.eof()) {
+      anchor.btcBlockHeight = br.readUInt32LE();
+      anchor.btcTxHash = br.readReverse(32).toString('hex');
+
+      br.set({ pos: br.pos + 36 });
+
+      anchor.dfcBlockHash = br.readReverse(32).toString('hex');
+
+      if (anchor.dfcBlockHash.length !== 64) {
+        throw new Error('Wrong dfcBlockHash size');
+      }
+
+      return anchor;
+    } else {
+      throw new Error('End of file');
+    }
+  } catch (e) {
+    throw new Error('Can\'t get AnchorBlockHash: ' + e.message);
+  }
+};
+
 module.exports = Script;
