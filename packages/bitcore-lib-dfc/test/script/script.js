@@ -1076,4 +1076,51 @@ describe('Script', function() {
       trueCount.should.equal(defaultCount);
     });
   });
+
+  describe('Anchor transactions', function() {
+    describe('#isAnchor', function() {
+      it('should exist isAnchor method', function() {
+        expect(Script().isAnchor).to.exist;
+      });
+
+      it('should return false for not valid script', function() {
+        expect(Script().isAnchor()).to.equal(false);
+        expect(Script('OP_RETURN').isAnchor()).to.equal(false);
+        expect(Script('OP_RETURN 1 0x00').isAnchor()).to.equal(false);
+        expect(Script('OP_RETURN 2 0x0101').isAnchor()).to.equal(false);
+        expect(Script('OP_RETURN 5 0x0444664165').isAnchor()).to.equal(false);
+      });
+
+      it('should return true for valid script', function() {
+        expect(Script('OP_RETURN 5 0x0444664166').isAnchor()).to.equal(true);
+        expect(Script('OP_RETURN 41 0x0444664166000000000000000000000000000000000000000000000000000000000000000000000001').isAnchor()).to.equal(true);
+      });
+    });
+
+    describe('#getAnchor', function() {
+      it('should exist getAnchor', function() {
+        expect(Script().getAnchor).to.exist;
+      });
+
+      it('should throw error for not valid script', function() {
+        var s1 = Script('OP_RETURN 5 0x0444664166');
+        expect(s1.getAnchor.bind(s1)).to.throw('End of file');
+        var s1 = Script('OP_RETURN 44 0x0444664166000000000000000000000000000000000000000000000000000000000000000000000001000000');
+        expect(s1.getAnchor.bind(s1)).to.throw('Wrong dfcBlockHash size');
+      });
+
+      it('should return anchorBlockHash', function() {
+        expect(
+          Script('OP_RETURN OP_PUSHDATA2 106 0x04446641660f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011c669f5a5ca05657405e6982c42f4ee1621309e65838eb3fae0d83d53487eda0')
+            .getAnchor(),
+        ).to.deep.equal({
+          btcBlockHeight: 15,
+          btcTxHash: '0000000000000000000000000000000000000000000000000000000000000000',
+          dfcBlockHash: 'a0ed8734d5830dae3feb3858e6091362e14e2fc482695e405756a05c5a9f661c',
+        });
+      });
+      // 0x [{04} 44664166] [0000000f]  [0000000000000000000000000000000000000000000000000000000000000000] [0000000000000000000000000000000000000000000000000000000000000000] [00000001] [1c669f5a5ca05657405e6982c42f4ee1621309e65838eb3fae0d83d53487eda0]
+      //    [Anchor Marker] [btcHeight] [                           btcTxHash                            ] [                           prevAnchor                           ] [ height ] [                          dfcBlockHash                          ]
+    });
+  });
 });
