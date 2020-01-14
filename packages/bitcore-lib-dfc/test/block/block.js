@@ -196,8 +196,7 @@ describe('Block', function() {
           stakeModifier: '3484c4c5fb18ff655e85d6e99941e6c0d30e8a0dbaca449131002843c7270cf0',
           height: 666,
           mintedBlocks: 352,
-          sig: '1fc5e507d9758ad317a8e8f71ace2ce7bdf8bca102bcb229b84d22d56f563d2562487be0621e235faa2b87c23b08ceb16286e99c4a1f417dab1c65fcf05ba299c7',
-          minedBy: '02ae418f9ac8b8d683bf765410fbb7a314db539b84426d67d635056d9c02a9c13f',
+          sig: '1fc5e507d9758ad317a8e8f71ace2ce7bdf8bca102bcb229b84d22d56f563d2562487be0621e235faa2b87c23b08ceb16286e99c4a1f417dab1c65fcf05ba299c7'
         },
         transactions: [{
           hash: '0f79aab8217d9463cac56516554c4547cdda77b88b8bdffe858b8a6917092266',

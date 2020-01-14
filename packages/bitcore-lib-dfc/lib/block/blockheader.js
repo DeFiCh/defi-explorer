@@ -194,14 +194,6 @@ BlockHeader.fromBufferReader = function fromBufferReader(br) {
  * @returns {Object} - A plain object of the BlockHeader
  */
 BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObject() {
-  var publicKey = '';
-
-  if (this.sig.length > 0) {
-    var sig = Signature.fromCompact(this.sig);
-    sig.recoveryParam = (this.sig[0] - 27) & 3; // recid
-    publicKey = PublicKey.recoverPubKey(this._getHash(), sig);
-  }
-
   return {
     hash: this.hash,
     version: this.version,
@@ -213,7 +205,6 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
     height: this.height.toNumber(),
     mintedBlocks: this.mintedBlocks.toNumber(),
     sig: this.sig.toString('hex'),
-    minedBy: publicKey ? publicKey.toString() : '',
   };
 };
 
