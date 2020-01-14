@@ -1348,4 +1348,28 @@ Transaction.prototype.enableRBF = function() {
   return this;
 };
 
+Transaction.prototype.isAnchor = function() {
+  if (this.isCoinbase()) {
+    var outputScript = this.outputs &&
+      this.outputs.length > 0 &&
+      this.outputs[0].script;
+
+    return outputScript && outputScript.isAnchor();
+  }
+
+  return false;
+};
+
+Transaction.prototype.getAnchor = function() {
+  try {
+    if (this.isAnchor()) {
+      return this.outputs[0].script.getAnchor();
+    }
+  } catch(e) {
+    console.log(e);
+  }
+
+  return null;
+};
+
 module.exports = Transaction;
