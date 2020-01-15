@@ -1,11 +1,11 @@
-const bitcoreLib = require('bitcore-lib');
+const bitcoreLib = require('bitcore-lib-dfc');
 const { Transaction, PrivateKey } = bitcoreLib;
 const UnspentOutput = Transaction.UnspentOutput;
 
 import config from '../../src/config';
 import { Storage } from '../../src/services/storage';
 import { BlockStorage } from '../../src/models/block';
-import { BitcoinBlockType } from '../../src/types/namespaces/Bitcoin/Block';
+import { DefichainBlockType } from '../../src/types/namespaces/Defichain/Block';
 import { resetDatabase } from '../helpers/index.js';
 import * as crypto from 'crypto';
 
@@ -13,7 +13,7 @@ function randomHash() {
   return crypto.randomBytes(32).toString('hex');
 }
 function* generateBlocks(blockCount: number, blockSizeMb: number) {
-  let prevBlock: BitcoinBlockType | undefined = undefined;
+  let prevBlock: DefichainBlockType | undefined = undefined;
   for (let i = 0; i < blockCount; i++) {
     let tempBlock = generateBlock(blockSizeMb, prevBlock);
     yield tempBlock;
@@ -22,46 +22,36 @@ function* generateBlocks(blockCount: number, blockSizeMb: number) {
 }
 
 function preGenerateBlocks(blockCount: number, blockSizeMb: number) {
-  const blocks = new Array<BitcoinBlockType>();
+  const blocks = new Array<DefichainBlockType>();
   for (let block of generateBlocks(blockCount, blockSizeMb)) {
     blocks.push(block);
   }
   return blocks;
 }
 
-function generateBlock(blockSizeMb: number, previousBlock?: BitcoinBlockType): BitcoinBlockType {
+function generateBlock(blockSizeMb: number, previousBlock?: DefichainBlockType): DefichainBlockType {
   const txAmount = 100000;
   const prevHash = previousBlock ? previousBlock.hash : '';
-  let block: BitcoinBlockType = {
+  let block: DefichainBlockType = {
     hash: randomHash(),
     transactions: [],
     toBuffer: () => {
       return { length: 264 } as Buffer;
     },
     header: {
-      toObject: () => {
-        return {
+      toObject: () => ({
           hash: randomHash(),
-          confirmations: 1,
-          strippedsize: 228,
-          size: 264,
-          weight: 948,
-          height: 1355,
           version: 536870912,
-          versionHex: '20000000',
-          merkleRoot: randomHash(),
-          tx: [randomHash()],
-          time: 1526756523,
-          mediantime: 1526066375,
-          nonce: 2,
-          bits: parseInt('207fffff', 16),
-          difficulty: 4.656542373906925e-10,
-          chainwork: '0000000000000000000000000000000000000000000000000000000000000a98',
           prevHash: prevHash,
-          minedBy: '',
-        };
-      }
-    }
+          merkleRoot: randomHash(),
+          time: 1526756523,
+          bits: parseInt('207fffff', 16),
+          height: 1355,
+          mintedBlocks: 1354,
+          stakeModifier: randomHash(),
+          sig: randomHash(),
+      }),
+    },
   };
   let transactions = new Array<any>();
   if (previousBlock) {

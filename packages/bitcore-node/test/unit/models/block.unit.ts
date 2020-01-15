@@ -143,8 +143,10 @@ describe('Block Model', function() {
           version: 536870912,
           merkleRoot: '08e23107e8449f02568d37d37aa76e840e55bbb5f100ed8ad257af303db88c08',
           bits: parseInt('207fffff', 16),
-          nonce: 2,
-          minedBy: '',
+          height: 1,
+          mintedBlocks: 1,
+          stakeModifier: '08e23107e8449f02568d37d37aa76e840e55bbb5f100ed8ad257af303db88c08',
+          sig: '08e23107e8449f02568d37d37aa76e840e55bbb5f100ed8ad257af303db88c08',
         },
         chain: 'BTC',
         network: 'regtest'
@@ -269,7 +271,6 @@ describe('Block Model', function() {
         merkleRoot: 'deff',
         time: new Date(),
         timeNormalized: new Date(),
-        nonce: 1,
         previousBlockHash: 'aabb',
         nextBlockHash: 'bbcc',
         transactionCount: 1,
@@ -288,7 +289,6 @@ describe('Block Model', function() {
       expect(result.merkleRoot).to.be.equal(block.merkleRoot);
       expect(result.time).to.equal(block.time);
       expect(result.timeNormalized).to.equal(block.timeNormalized);
-      expect(result.nonce).to.be.equal(block.nonce);
       expect(result.bits).to.be.equal(block.bits);
       expect(result.previousBlockHash).to.be.equal(block.previousBlockHash);
       expect(result.nextBlockHash).to.be.equal(block.nextBlockHash);

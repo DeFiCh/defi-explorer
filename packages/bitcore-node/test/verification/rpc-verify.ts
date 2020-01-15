@@ -55,7 +55,6 @@ export async function blocks(
     expect(block.hash, 'block hash').to.equal(truth.hash);
     expect(block.version, 'block version').to.equal(truth.version);
     expect(block.merkleRoot, 'block merkle root').to.equal(truth.merkleroot);
-    expect(block.nonce, 'block nonce').to.equal(truth.nonce);
     expect(block.previousBlockHash, 'block prev hash').to.equal(truth.previousblockhash);
     expect(block.transactionCount, 'block tx count').to.equal(truth.tx.length);
     if (info.network !== 'regtest') {

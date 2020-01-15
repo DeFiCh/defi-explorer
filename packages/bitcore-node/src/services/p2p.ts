@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import { BlockStorage, BlockModel } from '../models/block';
 import { ChainStateProvider } from '../providers/chain-state';
 import { TransactionStorage } from '../models/transaction';
-import { Bitcoin } from '../types/namespaces/Bitcoin';
+import { Defichain } from '../types/namespaces/Defichain';
 import { StateStorage } from '../models/state';
 import { SpentHeightIndicators } from '../types/Coin';
 import os from 'os';
@@ -227,9 +227,9 @@ export class P2pWorker {
     }
   }
 
-  public async getHeaders(candidateHashes: string[]): Promise<Bitcoin.Block.HeaderObj[]> {
+  public async getHeaders(candidateHashes: string[]): Promise<Defichain.Block.HeaderObj[]> {
     let received = false;
-    return new Promise<Bitcoin.Block.HeaderObj[]>(async resolve => {
+    return new Promise<Defichain.Block.HeaderObj[]>(async resolve => {
       this.events.once('headers', headers => {
         received = true;
         resolve(headers);
@@ -244,7 +244,7 @@ export class P2pWorker {
   public async getBlock(hash: string) {
     logger.debug('Getting block, hash:', hash);
     let received = false;
-    return new Promise<Bitcoin.Block>(async resolve => {
+    return new Promise<Defichain.Block>(async resolve => {
       this.events.once(hash, block => {
         logger.debug('Received block, hash:', hash);
         received = true;
@@ -278,7 +278,7 @@ export class P2pWorker {
     });
   }
 
-  async processTransaction(tx: Bitcoin.Transaction): Promise<any> {
+  async processTransaction(tx: Defichain.Transaction): Promise<any> {
     const now = new Date();
     TransactionStorage.batchImport({
       chain: this.chain,
@@ -333,7 +333,7 @@ export class P2pWorker {
           await this.processBlock(block);
           currentHeight++;
           if (Date.now() - lastLog > 100) {
-            logger.info(`Sync `, {
+            logger.info('Sync ', {
               chain,
               network,
               height: currentHeight
@@ -387,7 +387,7 @@ export class P2pWorker {
         await BlockStorage.processBlock({ chain, network, block, initialSyncComplete: true });
         currentHeight++;
         if (Date.now() - lastLog > 100) {
-          logger.info(`Re-Sync `, {
+          logger.info('Re-Sync ', {
             chain,
             network,
             height: currentHeight

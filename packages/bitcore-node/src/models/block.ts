@@ -3,7 +3,7 @@ import { CoinStorage } from './coin';
 import { TransactionStorage } from './transaction';
 import { TransformOptions } from '../types/TransformOptions';
 import { LoggifyClass } from '../decorators/Loggify';
-import { Bitcoin } from '../types/namespaces/Bitcoin';
+import { Defichain } from '../types/namespaces/Defichain';
 import { BaseModel, MongoBound } from './base';
 import logger from '../logger';
 import { IBlock } from '../types/Block';
@@ -11,8 +11,6 @@ import { SpentHeightIndicators } from '../types/Coin';
 import { EventStorage } from './events';
 import config from '../config';
 import { StorageService } from '../services/storage';
-
-const Chain = require('../chain');
 
 export { IBlock };
 
@@ -51,7 +49,7 @@ export class BlockModel extends BaseModel<IBlock> {
   }
 
   async addBlock(params: {
-    block: Bitcoin.Block;
+    block: Defichain.Block;
     parentChain?: string;
     forkHeight?: number;
     initialSyncComplete: boolean;
@@ -70,14 +68,21 @@ export class BlockModel extends BaseModel<IBlock> {
   }
 
   async processBlock(params: {
-    block: Bitcoin.Block;
+    block: Defichain.Block;
     parentChain?: string;
     forkHeight?: number;
     initialSyncComplete: boolean;
     chain: string;
     network: string;
   }) {
-    const { chain, network, block, parentChain, forkHeight, initialSyncComplete } = params;
+    const {
+      chain,
+      network,
+      block,
+      parentChain,
+      forkHeight,
+      initialSyncComplete,
+    } = params;
     const blockOp = await this.getBlockOp(params);
     const convertedBlock = blockOp.updateOne.update.$set;
     const { height, timeNormalized, time } = convertedBlock;
@@ -93,12 +98,15 @@ export class BlockModel extends BaseModel<IBlock> {
       logger.debug('Updating previous block.nextBlockHash ', convertedBlock.hash);
     }
 
+    await this.processAnchor({ txs: block.transactions, chain, network })
+      .catch(e => console.log(e));
+
     await TransactionStorage.batchImport({
       txs: block.transactions,
       blockHash: convertedBlock.hash,
       blockTime: new Date(time),
       blockTimeNormalized: new Date(timeNormalized),
-      height: height,
+      height,
       chain,
       network,
       parentChain,
@@ -110,11 +118,14 @@ export class BlockModel extends BaseModel<IBlock> {
       EventStorage.signalBlock(convertedBlock);
     }
 
-    await this.collection.updateOne({ hash: convertedBlock.hash, chain, network }, { $set: { processed: true } });
+    await this.collection.updateOne(
+      { hash: convertedBlock.hash, chain, network },
+      { $set: { processed: true } },
+    );
     this.updateCachedChainTip({ block: convertedBlock, chain, network });
   }
 
-  async getBlockOp(params: { block: Bitcoin.Block; chain: string; network: string }) {
+  async getBlockOp(params: { block: Defichain.Block; chain: string; network: string }) {
     const { block, chain, network } = params;
     const header = block.header.toObject();
     const blockTime = header.time * 1000;
@@ -133,15 +144,6 @@ export class BlockModel extends BaseModel<IBlock> {
     const height = (previousBlock && previousBlock.height + 1) || 1;
     logger.debug('Setting blockheight', height);
 
-    let minedBy = '';
-
-    if (header.minedBy) {
-      const { lib: { Address, PublicKey } } = Chain[chain];
-      const pubKey = PublicKey.fromString(header.minedBy, 'hex');
-
-      minedBy = Address.fromPublicKey(pubKey, network).toString(true);
-    }
-
     const convertedBlock: IBlock = {
       chain,
       network,
@@ -154,12 +156,10 @@ export class BlockModel extends BaseModel<IBlock> {
       time: new Date(blockTime),
       timeNormalized: new Date(blockTimeNormalized),
       bits: header.bits,
-      nonce: header.nonce,
       transactionCount: block.transactions.length,
       size: block.toBuffer().length,
       reward: block.transactions[0].outputAmount,
       processed: false,
-      minedBy,
     };
     return {
       updateOne: {
@@ -195,7 +195,7 @@ export class BlockModel extends BaseModel<IBlock> {
     return this.collection.findOne({ chain, network, processed: true }, { sort: { height: -1 } });
   }
 
-  async handleReorg(params: { header?: Bitcoin.Block.HeaderObj; chain: string; network: string }): Promise<boolean> {
+  async handleReorg(params: { header?: Defichain.Block.HeaderObj; chain: string; network: string }): Promise<boolean> {
     const { header, chain, network } = params;
     let localTip = await this.getLocalTip(params);
     if (header && localTip && localTip.hash === header.prevHash) {
@@ -208,10 +208,10 @@ export class BlockModel extends BaseModel<IBlock> {
       const prevBlock = await this.collection.findOne({ chain, network, hash: header.prevHash });
       if (prevBlock) {
         localTip = prevBlock;
-        this.updateCachedChainTip({chain, network, block: prevBlock})
+        this.updateCachedChainTip({ chain, network, block: prevBlock });
       } else {
         delete this.chainTips[chain][network];
-        logger.error(`Previous block isn't in the DB need to roll back until we have a block in common`);
+        logger.error('Previous block isn\'t in the DB need to roll back until we have a block in common');
       }
       logger.info(`Resetting tip to ${localTip.height - 1}`, { chain, network });
     }
@@ -231,6 +231,28 @@ export class BlockModel extends BaseModel<IBlock> {
     return true;
   }
 
+  async processAnchor(props: { txs: Array<Defichain.Transaction>, chain: string, network: string }) {
+    const { txs, chain, network } = props;
+
+    for (let tx of txs) {
+      const anchor = tx.getAnchor();
+
+      if (anchor) {
+        const { dfcBlockHash, btcBlockHeight, btcTxHash } = anchor;
+        const anchoredBlock = await this.collection.findOne({ hash: dfcBlockHash, chain, network });
+
+        if (anchoredBlock) {
+          await this.collection.updateOne(
+            { hash: anchoredBlock.hash, chain, network },
+            { $set: { btcBlockHeight, btcTxHash } },
+          );
+        }
+
+        break;
+      }
+    }
+  }
+
   _apiTransform(block: Partial<MongoBound<IBlock>>, options?: TransformOptions): any {
     const transform = {
       _id: block._id,
@@ -243,7 +265,6 @@ export class BlockModel extends BaseModel<IBlock> {
       merkleRoot: block.merkleRoot,
       time: block.time,
       timeNormalized: block.timeNormalized,
-      nonce: block.nonce,
       bits: block.bits,
       /*
        *difficulty: block.difficulty,
@@ -258,14 +279,15 @@ export class BlockModel extends BaseModel<IBlock> {
        *isMainChain: block.mainChain,
        */
       transactionCount: block.transactionCount,
-      minedBy: block.minedBy,
       /*
        *minedBy: BlockModel.getPoolInfo(block.minedBy)
        */
     };
+
     if (options && options.object) {
       return transform;
     }
+
     return JSON.stringify(transform);
   }
 }
