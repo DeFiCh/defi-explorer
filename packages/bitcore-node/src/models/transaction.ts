@@ -4,7 +4,7 @@ import { partition } from '../utils/partition';
 import { ObjectID } from 'bson';
 import { TransformOptions } from '../types/TransformOptions';
 import { LoggifyClass } from '../decorators/Loggify';
-import { Bitcoin } from '../types/namespaces/Bitcoin';
+import { Defichain } from '../types/namespaces/Defichain';
 import { BaseModel, MongoBound } from './base';
 import logger from '../logger';
 import { StreamingFindOptions, Storage, StorageService } from '../services/storage';
@@ -91,7 +91,7 @@ export class TransactionModel extends BaseModel<ITransaction> {
     { key: 'txid' as 'txid', type: 'string' as 'string' }
   ];
 
-  onConnect() {
+  async onConnect() {
     this.collection.createIndex({ txid: 1 }, { background: true });
     this.collection.createIndex({ chain: 1, network: 1, blockHeight: 1 }, { background: true });
     this.collection.createIndex({ blockHash: 1 }, { background: true });
@@ -107,7 +107,7 @@ export class TransactionModel extends BaseModel<ITransaction> {
   }
 
   async batchImport(params: {
-    txs: Array<Bitcoin.Transaction>;
+    txs: Array<Defichain.Transaction>;
     height: number;
     mempoolTime?: Date;
     blockTime?: Date;
@@ -170,7 +170,7 @@ export class TransactionModel extends BaseModel<ITransaction> {
   }
 
   async addTransactions(params: {
-    txs: Array<Bitcoin.Transaction>;
+    txs: Array<Defichain.Transaction>;
     height: number;
     blockTime?: Date;
     blockHash?: string;
@@ -315,7 +315,7 @@ export class TransactionModel extends BaseModel<ITransaction> {
   }
 
   async getMintOps(params: {
-    txs: Array<Bitcoin.Transaction>;
+    txs: Array<Defichain.Transaction>;
     height: number;
     parentChain?: string;
     forkHeight?: number;
@@ -421,7 +421,7 @@ export class TransactionModel extends BaseModel<ITransaction> {
   }
 
   getSpendOps(params: {
-    txs: Array<Bitcoin.Transaction>;
+    txs: Array<Defichain.Transaction>;
     height: number;
     parentChain?: string;
     forkHeight?: number;
@@ -475,7 +475,7 @@ export class TransactionModel extends BaseModel<ITransaction> {
   }
 
   async pruneMempool(params: {
-    txs: Array<Bitcoin.Transaction>;
+    txs: Array<Defichain.Transaction>;
     height: number;
     parentChain?: string;
     forkHeight?: number;
