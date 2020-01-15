@@ -8,7 +8,6 @@ export type IBlock = {
   merkleRoot: string;
   time: Date;
   timeNormalized: Date;
-  nonce: number;
   previousBlockHash: string;
   nextBlockHash: string;
   transactionCount: number;
@@ -16,5 +15,7 @@ export type IBlock = {
   bits: number;
   reward: number;
   processed: boolean;
-  minedBy?: string;
+  // anchor...
+  btcBlockHeight?: number,
+  btcTxHash?: string,
 };
