@@ -1,4 +1,4 @@
-const bitcoreLib = require('bitcore-lib-dfc');
+const bitcoreLib = require('bitcore-lib-dfi');
 const { Transaction, PrivateKey } = bitcoreLib;
 const UnspentOutput = Transaction.UnspentOutput;
 

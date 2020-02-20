@@ -14,7 +14,7 @@ import { PriceProvider } from '../../providers/price/price';
 
 import * as bitcoreLib from 'bitcore-lib';
 import * as bitcoreLibCash from 'bitcore-lib-cash';
-import * as bitcoreLibDfc from 'bitcore-lib-dfc';
+import * as bitcoreLibDfi from 'bitcore-lib-dfi';
 
 @Injectable()
 @IonicPage({
@@ -79,7 +79,7 @@ export class MessagesPage {
 
     const bitcore = this.chainNetwork.chain === 'BTC'
         ? bitcoreLib : this.chainNetwork.chain === 'BCH'
-        ? bitcoreLibCash : bitcoreLibDfc;
+        ? bitcoreLibCash : bitcoreLibDfi;
     const message = new bitcore.Message(values.message);
 
     try {
@@ -97,7 +97,7 @@ export class MessagesPage {
   private isAddressValid(addr): boolean {
     const bitcore = this.chainNetwork.chain === 'BTC'
       ? bitcoreLib : this.chainNetwork.chain === 'BCH'
-      ? bitcoreLibCash : bitcoreLibDfc;
+      ? bitcoreLibCash : bitcoreLibDfi;
     return !!bitcore.Address.isValid(addr, this.chainNetwork.network)
       ? true
       : false;

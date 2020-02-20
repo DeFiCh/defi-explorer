@@ -23,7 +23,7 @@ services:
     environment:
       - DB_HOST=database
       - NETWORK=testnet
-      - CHAIN=DFC
+      - CHAIN=DFI
       - BITCORE_CONFIG_PATH=bitcore.config.json
     depends_on:
       - database
@@ -41,7 +41,7 @@ services:
     environment:
       - ENV=prod
       - NETWORK=testnet
-      - CHAIN=DFC
+      - CHAIN=DFI
       - API_PREFIX=http://127.0.0.1:3000/api
       - BITCORE_CONFIG_PATH=bitcore.config.json
     depends_on:

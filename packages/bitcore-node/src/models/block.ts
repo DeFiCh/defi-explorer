@@ -238,8 +238,8 @@ export class BlockModel extends BaseModel<IBlock> {
       const anchor = tx.getAnchor();
 
       if (anchor) {
-        const { dfcBlockHash, btcBlockHeight, btcTxHash } = anchor;
-        const anchoredBlock = await this.collection.findOne({ hash: dfcBlockHash, chain, network });
+        const { dfiBlockHash, btcBlockHeight, btcTxHash } = anchor;
+        const anchoredBlock = await this.collection.findOne({ hash: dfiBlockHash, chain, network });
 
         if (anchoredBlock) {
           await this.collection.updateOne(
