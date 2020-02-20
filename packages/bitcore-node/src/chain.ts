@@ -7,8 +7,8 @@ module.exports = {
     lib: require('bitcore-lib-cash'),
     p2p: require('bitcore-p2p-cash'),
   },
-  DFC: {
-    lib: require('bitcore-lib-dfc'),
-    p2p: require('bitcore-p2p-dfc'),
+  DFI: {
+    lib: require('bitcore-lib-dfi'),
+    p2p: require('bitcore-p2p-dfi'),
   },
 };

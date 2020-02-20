@@ -22,7 +22,7 @@ export type DefichainOutput = {
 export type DefichainTransactionAnchor = {
   btcBlockHeight: number,
   btcTxHash: string,
-  dfcBlockHash: string,
+  dfiBlockHash: string,
 }
 export type DefichainTransactionType = {
   outputAmount: number;
