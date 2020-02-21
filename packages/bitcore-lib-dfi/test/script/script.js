@@ -1093,7 +1093,7 @@ describe('Script', function() {
 
       it('should return true for valid script', function() {
         expect(Script('OP_RETURN 5 0x0444664166').isAnchor()).to.equal(true);
-        expect(Script('OP_RETURN 41 0x0444664166000000000000000000000000000000000000000000000000000000000000000000000001').isAnchor()).to.equal(true);
+        expect(Script('OP_RETURN 41 0x044466416600000000000000000000000000000000000000000000000000000000000000000000000100000000').isAnchor()).to.equal(true);
       });
     });
 
@@ -1105,22 +1105,33 @@ describe('Script', function() {
       it('should throw error for not valid script', function() {
         var s1 = Script('OP_RETURN 5 0x0444664166');
         expect(s1.getAnchor.bind(s1)).to.throw('End of file');
-        var s1 = Script('OP_RETURN 44 0x0444664166000000000000000000000000000000000000000000000000000000000000000000000001000000');
-        expect(s1.getAnchor.bind(s1)).to.throw('Wrong dfcBlockHash size');
+        var s2 = Script('OP_RETURN 44 0x0444664166000000000000000000000000000000000000000000000000000000000000000000000001000000');
+        expect(s2.getAnchor.bind(s2)).to.throw('Index out of range');
       });
 
       it('should return anchorBlockHash', function() {
         expect(
-          Script('OP_RETURN OP_PUSHDATA2 109 0x04446641660f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011c669f5a5ca05657405e6982c42f4ee1621309e65838eb3fae0d83d53487eda0')
+          Script('OP_RETURN OP_PUSHDATA2 109 0x0444664166000000000000000000000000000000000000000000000000000000000000000010000000010000000001000000001000000')
             .getAnchor(),
         ).to.deep.equal({
-          btcBlockHeight: 15,
           btcTxHash: '0000000000000000000000000000000000000000000000000000000000000000',
-          dfcBlockHash: 'a0ed8734d5830dae3feb3858e6091362e14e2fc482695e405756a05c5a9f661c',
+          anchorBlockHeight: 16,
+          prevAnchorBlockHeight: 1,
         });
       });
-      // 0x [{04} 44664166] [0000000f]  [0000000000000000000000000000000000000000000000000000000000000000] [0000000000000000000000000000000000000000000000000000000000000000] [00000001] [1c669f5a5ca05657405e6982c42f4ee1621309e65838eb3fae0d83d53487eda0]
-      //    [Anchor Marker] [btcHeight] [                           btcTxHash                            ] [                           prevAnchor                           ] [ height ] [                          dfcBlockHash                          ]
+
+      it('should return anchorBlockHash from Buffer', function () {
+        expect(
+          Script(Buffer.from('6a4d2d0004446641661c669f5a5ca05657405e6982c42f4ee1621309e65838eb3fae0d83d53487eda01000000001000000', 'hex'))
+            .getAnchor(),
+        ).to.deep.equal(
+          {
+            btcTxHash: 'a0ed8734d5830dae3feb3858e6091362e14e2fc482695e405756a05c5a9f661c',
+            anchorBlockHeight: 16,
+            prevAnchorBlockHeight: 1,
+          }
+        );
+      });
     });
   });
 });
