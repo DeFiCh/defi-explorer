@@ -1185,16 +1185,9 @@ Script.prototype.getAnchor = function getAnchor() {
 
   try {
     if (!br.eof()) {
-      anchor.btcBlockHeight = br.readUInt32LE();
       anchor.btcTxHash = br.readReverse(32).toString('hex');
-
-      br.set({ pos: br.pos + 36 });
-
-      anchor.dfiBlockHash = br.readReverse(32).toString('hex');
-
-      if (anchor.dfiBlockHash.length !== 64) {
-        throw new Error('Wrong dfiBlockHash size');
-      }
+      anchor.anchorBlockHeight = br.readUInt32LE();
+      anchor.prevAnchorBlockHeight = br.readUInt32LE();
 
       return anchor;
     } else {
