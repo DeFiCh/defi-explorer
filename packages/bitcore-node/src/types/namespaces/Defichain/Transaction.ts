@@ -20,9 +20,9 @@ export type DefichainOutput = {
   satoshis: number;
 };
 export type DefichainTransactionAnchor = {
-  btcBlockHeight: number,
   btcTxHash: string,
-  dfiBlockHash: string,
+  anchorBlockHeight: number,
+  prevAnchorBlockHeight: number,
 }
 export type DefichainTransactionType = {
   outputAmount: number;

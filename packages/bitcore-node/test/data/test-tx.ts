@@ -46,3 +46,20 @@ export const TEST_TX_3 = {
   nLockTime: 0,
   toBuffer: () => Buffer.from('')
 };
+
+export const TEST_TX_4 = {
+  hash: '947911ecc53cd8313220c94ba2211b90a4062a79ee8f830b100861c377f501ff',
+  _hash: '947911ecc53cd8313220c94ba2211b90a4062a79ee8f830b100861c377f501ff',
+  isCoinbase: () => true,
+  isAnchor: () => true,
+  getAnchor: () => ({
+    btcTxHash: 'fffffffffffffffffffffff0000000000000000000000000fffffffffffffaaa',
+    anchorBlockHeight: 1355,
+    prevAnchorBlockHeight: 1335,
+  }),
+  outputAmount: 0.07865625,
+  inputs: [],
+  outputs: [],
+  nLockTime: 0,
+  toBuffer: () => Buffer.from(''),
+};
