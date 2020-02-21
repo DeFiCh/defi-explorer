@@ -99,7 +99,7 @@ export class BlockModel extends BaseModel<IBlock> {
     }
 
     await this.processAnchor({ txs: block.transactions, chain, network })
-      .catch(e => console.log(e));
+      .catch(e => logger.error(e));
 
     await TransactionStorage.batchImport({
       txs: block.transactions,
@@ -238,13 +238,13 @@ export class BlockModel extends BaseModel<IBlock> {
       const anchor = tx.getAnchor();
 
       if (anchor) {
-        const { dfiBlockHash, btcBlockHeight, btcTxHash } = anchor;
-        const anchoredBlock = await this.collection.findOne({ hash: dfiBlockHash, chain, network });
+        const { anchorBlockHeight, btcTxHash } = anchor;
+        const anchoredBlock = await this.collection.findOne({ height: anchorBlockHeight, chain, network });
 
         if (anchoredBlock) {
           await this.collection.updateOne(
             { hash: anchoredBlock.hash, chain, network },
-            { $set: { btcBlockHeight, btcTxHash } },
+            { $set: { btcTxHash } },
           );
         }
 
