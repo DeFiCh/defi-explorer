@@ -1,20 +1,22 @@
 import { expect } from 'chai';
+import * as sinon from 'sinon';
+import { ObjectID } from 'mongodb';
+
+import { Storage } from '../../../src/services/storage';
 import { BlockStorage, IBlock } from '../../../src/models/block';
 import { TransactionStorage } from '../../../src/models/transaction';
 import { CoinStorage } from '../../../src/models/coin';
-import * as sinon from 'sinon';
-import { TEST_BLOCK } from '../../data/test-block';
-import { Storage } from '../../../src/services/storage';
-import { mockStorage } from '../../helpers';
-import { mockCollection } from '../../helpers/index.js';
 import { ChainStateProvider } from '../../../src/providers/chain-state';
-import { ObjectID } from 'mongodb';
+
+import { TEST_BLOCK, TEST_BLOCK_4 } from '../../data/test-block';
+import { mockStorage, mockCollection } from '../../helpers';
+
 import { MongoBound } from '../../../src/models/base';
 
 describe('Block Model', function() {
   let addBlockParams = {
-    chain: 'BTC',
-    network: 'regtest',
+    chain: 'DFI',
+    network: 'testnet',
     block: TEST_BLOCK,
     height: 1355,
     initialSyncComplete: false
@@ -28,6 +30,7 @@ describe('Block Model', function() {
     afterEach(() => {
       sandbox.restore();
     });
+
     it('should be able to add a block', async () => {
       let newBlock = Object.assign({ save: () => Promise.resolve() }, BlockStorage, addBlockParams);
 
@@ -37,6 +40,31 @@ describe('Block Model', function() {
 
       const result = await BlockStorage.addBlock(addBlockParams);
       expect(result);
+    });
+
+    it('should be able to add a block and set anchor data to block', async function () {
+      let newBlock = {
+        save: () => Promise.resolve(),
+        ...BlockStorage,
+        ...addBlockParams
+      };
+
+      const updateOne = sinon.stub().resolves(newBlock);
+      const spyUpdateOne = sinon.spy(updateOne);
+
+      mockStorage(newBlock, { updateOne: spyUpdateOne });
+      sandbox.stub(BlockStorage, 'handleReorg').resolves();
+      sandbox.stub(TransactionStorage, 'batchImport').resolves();
+
+      const result = await BlockStorage.addBlock({
+        ...addBlockParams,
+        block: TEST_BLOCK_4,
+      });
+
+      expect(result);
+      expect(spyUpdateOne.getCall(1).args[1]).deep.equal({
+        $set: { btcTxHash: 'fffffffffffffffffffffff0000000000000000000000000fffffffffffffaaa' },
+      });
     });
   });
 
@@ -90,7 +118,7 @@ describe('Block Model', function() {
     });
     it('should return the new tip', async () => {
       mockStorage(null);
-      const params = { chain: 'BTC', network: 'regtest' };
+      const params = { chain: 'DFI', network: 'testnet' };
       const result = await ChainStateProvider.getLocalTip(params);
       expect(result.height).to.deep.equal(addBlockParams.height + 1);
       expect(result.chain).to.deep.equal(addBlockParams.chain);
@@ -137,19 +165,19 @@ describe('Block Model', function() {
 
       const params = {
         header: {
-          prevHash: '3420349f63d96f257d56dd970f6b9079af9cf2784c267a13b1ac339d47031fe9',
           hash: '64bfb3eda276ae4ae5b64d9e36c9c0b629bc767fb7ae66f9d55d2c5c8103a929',
-          time: 1526756523,
           version: 536870912,
+          prevHash: '3420349f63d96f257d56dd970f6b9079af9cf2784c267a13b1ac339d47031fe9',
           merkleRoot: '08e23107e8449f02568d37d37aa76e840e55bbb5f100ed8ad257af303db88c08',
+          time: 1526756523,
           bits: parseInt('207fffff', 16),
           height: 1,
           mintedBlocks: 1,
           stakeModifier: '08e23107e8449f02568d37d37aa76e840e55bbb5f100ed8ad257af303db88c08',
           sig: '08e23107e8449f02568d37d37aa76e840e55bbb5f100ed8ad257af303db88c08',
         },
-        chain: 'BTC',
-        network: 'regtest'
+        chain: 'DFI',
+        network: 'testnet'
       };
 
       await BlockStorage.handleReorg(params);
@@ -166,8 +194,8 @@ describe('Block Model', function() {
       let coinModelUpdateSpy = CoinStorage.collection.updateMany as sinon.SinonSpy;
 
       let blockMethodParams = {
-        chain: 'BTC',
-        network: 'regtest',
+        chain: 'DFI',
+        network: 'testnet',
         block: TEST_BLOCK,
         height: 1355
       };
@@ -186,8 +214,8 @@ describe('Block Model', function() {
         previousBlockHash: '3420349f63d96f257d56dd970f6b9079af9cf2784c267a13b1ac339d47031fe9'
       });
       let blockMethodParams = {
-        chain: 'BTC',
-        network: 'regtest',
+        chain: 'DFI',
+        network: 'testnet',
         block: TEST_BLOCK,
         height: 1355
       };
@@ -205,8 +233,8 @@ describe('Block Model', function() {
       });
 
       let blockMethodParams = {
-        chain: 'BTC',
-        network: 'regtest',
+        chain: 'DFI',
+        network: 'testnet',
         block: TEST_BLOCK,
         height: 1355
       };
@@ -224,8 +252,8 @@ describe('Block Model', function() {
       });
 
       let blockMethodParams = {
-        chain: 'BTC',
-        network: 'regtest',
+        chain: 'DFI',
+        network: 'testnet',
         block: TEST_BLOCK,
         height: 1355
       };
@@ -245,8 +273,8 @@ describe('Block Model', function() {
       });
 
       let blockMethodParams = {
-        chain: 'BTC',
-        network: 'regtest',
+        chain: 'DFI',
+        network: 'testnet',
         block: TEST_BLOCK,
         height: 1355
       };
@@ -263,8 +291,8 @@ describe('Block Model', function() {
   describe('_apiTransform', () => {
     it('should return the transform object with block values', () => {
       const block: IBlock = {
-        chain: 'BTC',
-        network: 'mainnet',
+        chain: 'DFI',
+        network: 'testnet',
         height: 1,
         hash: 'abcd',
         version: 1,
