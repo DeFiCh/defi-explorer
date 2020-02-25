@@ -282,6 +282,7 @@ export class BlockModel extends BaseModel<IBlock> {
       /*
        *minedBy: BlockModel.getPoolInfo(block.minedBy)
        */
+      btcTxHash: block.btcTxHash,
     };
 
     if (options && options.object) {
