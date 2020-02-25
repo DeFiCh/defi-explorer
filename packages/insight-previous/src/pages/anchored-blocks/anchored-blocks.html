@@ -1,0 +1,16 @@
+<head-nav></head-nav>
+<ion-content>
+  <ion-grid fixed>
+    <div class="page-content">
+
+      <loader *ngIf="loading" [type]="'title'"></loader>
+
+      <div *ngIf="!loading">
+        <h1>Anchored Blocks</h1>
+        <latest-blocks [numBlocks]="200" [showTimeAs]="'timestamp'" [showAnchoredBlocksButton]="true"></latest-blocks>
+      </div>
+
+    </div>
+  </ion-grid>
+</ion-content>
+<footer [chainNetwork]="chainNetwork"></footer>
