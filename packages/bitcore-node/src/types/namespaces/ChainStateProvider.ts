@@ -35,12 +35,18 @@ export declare namespace CSP {
   export type GetBlockParams = ChainNetwork & {
     blockId?: string;
     sinceBlock?: number | string;
-    args?: Partial<{ startDate: Date; endDate: Date; date: Date } & StreamingFindOptions<IBlock>>;
+    anchorsOnly?: boolean;
+    args?: Partial<{
+      startDate: Date;
+      endDate: Date;
+      date: Date;
+    } & StreamingFindOptions<IBlock>>;
   };
   export type StreamBlocksParams = ChainNetwork & {
     blockId?: string;
     sinceBlock: number | string;
-    args?: Partial<{ startDate: Date; endDate: Date; date: Date } & StreamingFindOptions<IBlock>>;
+    anchorsOnly: boolean;
+    args?: Partial<{ startDate: Date; endDate: Date; date: Date; } & StreamingFindOptions<IBlock>>;
     req: Request;
     res: Response;
   };

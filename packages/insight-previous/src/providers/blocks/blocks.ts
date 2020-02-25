@@ -95,8 +95,8 @@ export class BlocksProvider {
     return this.httpClient.get<ApiBlock>(heightUrl);
   }
 
-  public getBlocks(numBlocks: number = 10): Observable<ApiBlock[]> {
-    const url: string = this.api.getUrl() + '/block?limit=' + numBlocks;
+  public getBlocks(numBlocks: number = 10, anchorsOnly: boolean = false,): Observable<ApiBlock[]> {
+    const url: string = `${this.api.getUrl()}/block?limit=${numBlocks}&anchorsOnly=${anchorsOnly}`;
     return this.httpClient.get<ApiBlock[]>(url);
   }
 
@@ -105,9 +105,10 @@ export class BlocksProvider {
    */
   public pageBlocks(
     since: number,
-    numBlocks: number = 10
+    numBlocks: number = 10,
+    anchorsOnly: boolean = false,
   ): Observable<ApiBlock[]> {
-    const url = `${this.api.getUrl()}/block?since=${since}&limit=${numBlocks}&paging=height&direction=-1`;
+    const url = `${this.api.getUrl()}/block?since=${since}&limit=${numBlocks}&paging=height&direction=-1&anchorsOnly=${anchorsOnly}`;
     return this.httpClient.get<ApiBlock[]>(url);
   }
 
