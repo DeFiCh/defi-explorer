@@ -6,6 +6,7 @@ import { CurrencyProvider } from '../../providers/currency/currency';
 import { Logger } from '../../providers/logger/logger';
 import { PriceProvider } from '../../providers/price/price';
 import { RedirProvider } from '../../providers/redir/redir';
+import { AppBlock } from '../../providers/blocks/blocks';
 import { TxsProvider } from '../../providers/transactions/transactions';
 
 @Injectable()
@@ -22,9 +23,7 @@ export class BlockDetailPage {
   public loading = true;
   public errorMessage: string;
   public confirmations: number;
-  public block: any = {
-    tx: []
-  };
+  public block?: AppBlock = null;
 
   private blockHash: string;
   private chainNetwork: ChainNetwork;
