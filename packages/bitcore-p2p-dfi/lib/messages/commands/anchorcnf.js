@@ -3,13 +3,13 @@
 var Message = require('../message');
 var inherits = require('util').inherits;
 
-function AnchorConfig() {}
-inherits(AnchorConfig, Message);
+function AnchorConformation() {}
+inherits(AnchorConformation, Message);
 
-AnchorConfig.prototype.setPayload = function() {};
+AnchorConformation.prototype.setPayload = function() {};
 
-AnchorConfig.prototype.getPayload = function() {
+AnchorConformation.prototype.getPayload = function() {
   return Buffer.from([]);
 };
 
-module.exports = AnchorConfig;
+module.exports = AnchorConformation;

@@ -96,7 +96,7 @@ export class BlocksProvider {
   }
 
   public getBlocks(numBlocks: number = 10, anchorsOnly: boolean = false,): Observable<ApiBlock[]> {
-    const url: string = `${this.api.getUrl()}/block?limit=${numBlocks}&anchorsOnly=${anchorsOnly}`;
+    const url = `${this.api.getUrl()}/block?limit=${numBlocks}&anchorsOnly=${anchorsOnly}`;
     return this.httpClient.get<ApiBlock[]>(url);
   }
 
