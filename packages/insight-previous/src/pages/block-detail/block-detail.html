@@ -18,7 +18,7 @@
         </p>
         <p class="item-hash" [hidden]="!block.isAnchor">
           <b>Bitcoin Anchor Tx Hash:</b>
-          <a href="">{{ block.btcTxHash }}</a>
+          <a target="_blank" href="{{ btcExplorerUrl + block.btcTxHash }}">{{ block.btcTxHash }}</a>
         </p>
 
         <h2>Summary</h2>
