@@ -23,9 +23,15 @@ export class BlockDetailPage {
   public errorMessage: string;
   public confirmations: number;
   public block?: AppBlock = null;
+  public btcExplorerUrl?: string = null;
 
   private blockHash: string;
   private chainNetwork: ChainNetwork;
+
+  static btcExplorers = {
+    testnet: 'https://live.blockcypher.com/btc-testnet/tx/',
+    mainnet: 'https://live.blockcypher.com/btc/tx/',
+  };
 
   constructor(
     public navParams: NavParams,
@@ -47,6 +53,7 @@ export class BlockDetailPage {
       chain,
       network
     };
+    this.btcExplorerUrl = BlockDetailPage.btcExplorers[network];
     this.apiProvider.changeNetwork(this.chainNetwork);
     this.currencyProvider.setCurrency();
     this.priceProvider.setCurrency();
