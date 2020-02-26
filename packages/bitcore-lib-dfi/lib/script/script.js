@@ -1166,7 +1166,7 @@ Script.prototype.isAnchor = function isAnchor() {
       var br = new BufferReader(this.chunks[1].buf);
 
       if (!br.eof()) {
-        return br.readVarLengthBuffer().toString() === 'DfAf';
+        return br.read(4).toString() === 'DfAf';
       }
     }
   } catch(e) {}
@@ -1180,21 +1180,14 @@ Script.prototype.isAnchor = function isAnchor() {
  */
 Script.prototype.getAnchor = function getAnchor() {
   var br = new BufferReader(this.chunks[1].buf);
-  br.set({ pos: 5 });
+  br.set({ pos: 4 });
   var anchor = {};
 
   try {
     if (!br.eof()) {
-      anchor.btcBlockHeight = br.readUInt32LE();
       anchor.btcTxHash = br.readReverse(32).toString('hex');
-
-      br.set({ pos: br.pos + 36 });
-
-      anchor.dfiBlockHash = br.readReverse(32).toString('hex');
-
-      if (anchor.dfiBlockHash.length !== 64) {
-        throw new Error('Wrong dfiBlockHash size');
-      }
+      anchor.anchorBlockHeight = br.readUInt32LE();
+      anchor.prevAnchorBlockHeight = br.readUInt32LE();
 
       return anchor;
     } else {

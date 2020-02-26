@@ -7,8 +7,8 @@ import {
   ResponseOptions
 } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
-import { CurrencyProvider } from '../../providers/currency/currency';
-import { DefaultProvider } from '../../providers/default/default';
+import { CurrencyProvider } from '../currency/currency';
+import { DefaultProvider } from '../default/default';
 import { ApiProvider } from '../api/api';
 import { AppBlock, BlocksProvider } from './blocks';
 

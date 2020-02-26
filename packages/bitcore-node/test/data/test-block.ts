@@ -1,4 +1,4 @@
-import { TEST_TX, TEST_TX_1, TEST_TX_2, TEST_TX_3 } from './test-tx';
+import { TEST_TX, TEST_TX_1, TEST_TX_2, TEST_TX_3, TEST_TX_4 } from './test-tx';
 import { Defichain } from '../../src/types/namespaces/Defichain';
 export const TEST_BLOCK: Defichain.Block = {
   hash: '64bfb3eda276ae4ae5b64d9e36c9c0b629bc767fb7ae66f9d55d2c5c8103a929',
@@ -81,6 +81,33 @@ export const TEST_BLOCK_2: Defichain.Block = {
 export const TEST_BLOCK_3: Defichain.Block = {
   hash: '3279069d22ce5af68ef38332d5b40e79e1964b154d466e7fa233015a34c27312',
   transactions: [TEST_TX_3],
+  toBuffer: () => {
+    return { length: 264 } as Buffer;
+  },
+  header: {
+    toObject: () => {
+      return {
+        hash:
+          '3279069d22ce5af68ef38332d5b40e79e1964b154d466e7fa233015a34c27312',
+        height: 1357,
+        version: 536870912,
+        merkleRoot:
+          '8c29860888b915715878b21ce14707a17b43f6c51dfb62a1e736e35bc5d8093f',
+        time: 1526326785,
+        bits: parseInt('207fffff', 16),
+        prevHash:
+          '2a883ff89c7d6e9302bb4a4634cd580319a4fd59d69e979b344972b0ba042b86',
+        mintedBlocks: 1,
+        stakeModifier: '0000000000000000000000000000000000000000000000000000000000000000',
+        sig: '0000000000000000000000000000000000000000000000000000000000000000',
+      };
+    }
+  }
+};
+
+export const TEST_BLOCK_4: Defichain.Block = {
+  hash: '3279069d22ce5af68ef38332d5b40e79e1964b154d466e7fa233015a34c27312',
+  transactions: [TEST_TX_4],
   toBuffer: () => {
     return { length: 264 } as Buffer;
   },

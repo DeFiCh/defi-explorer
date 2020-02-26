@@ -16,6 +16,5 @@ export type IBlock = {
   reward: number;
   processed: boolean;
   // anchor...
-  btcBlockHeight?: number,
   btcTxHash?: string,
 };
