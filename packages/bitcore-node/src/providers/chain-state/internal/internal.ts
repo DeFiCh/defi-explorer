@@ -100,7 +100,8 @@ export class InternalStateProvider implements CSP.IChainStateService {
   }
 
   private getBlocksQuery(params: CSP.GetBlockParams | CSP.StreamBlocksParams) {
-    const { chain, network, sinceBlock, blockId, args = {} } = params;
+    const { chain, network, sinceBlock, blockId, anchorsOnly, args = {} } = params;
+
     let { startDate, endDate, date, since, direction, paging } = args;
     let { limit = 10, sort = { height: -1 } } = args;
     let options = { limit, sort, since, direction, paging };
@@ -141,6 +142,10 @@ export class InternalStateProvider implements CSP.IChainStateService {
       let nextDate = new Date(date);
       nextDate.setDate(nextDate.getDate() + 1);
       query.time = { $gt: firstDate, $lt: nextDate };
+    }
+
+    if (anchorsOnly) {
+      query.btcTxHash = { $exists: true };
     }
     return { query, options };
   }

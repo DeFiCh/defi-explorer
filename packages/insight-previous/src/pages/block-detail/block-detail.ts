@@ -1,7 +1,7 @@
 import { Component, Injectable } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { ApiProvider, ChainNetwork } from '../../providers/api/api';
-import { BlocksProvider } from '../../providers/blocks/blocks';
+import { AppBlock, BlocksProvider } from '../../providers/blocks/blocks';
 import { CurrencyProvider } from '../../providers/currency/currency';
 import { Logger } from '../../providers/logger/logger';
 import { PriceProvider } from '../../providers/price/price';
@@ -22,12 +22,16 @@ export class BlockDetailPage {
   public loading = true;
   public errorMessage: string;
   public confirmations: number;
-  public block: any = {
-    tx: []
-  };
+  public block?: AppBlock = null;
+  public btcExplorerUrl?: string = null;
 
   private blockHash: string;
   private chainNetwork: ChainNetwork;
+
+  static btcExplorers = {
+    testnet: 'https://live.blockcypher.com/btc-testnet/tx/',
+    mainnet: 'https://live.blockcypher.com/btc/tx/',
+  };
 
   constructor(
     public navParams: NavParams,
@@ -49,6 +53,7 @@ export class BlockDetailPage {
       chain,
       network
     };
+    this.btcExplorerUrl = BlockDetailPage.btcExplorers[network];
     this.apiProvider.changeNetwork(this.chainNetwork);
     this.currencyProvider.setCurrency();
     this.priceProvider.setCurrency();

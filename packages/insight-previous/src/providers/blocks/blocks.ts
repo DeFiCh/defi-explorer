@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiProvider } from '../../providers/api/api';
-import { CurrencyProvider } from '../../providers/currency/currency';
+
+import { ApiProvider } from '../api/api';
+import { CurrencyProvider } from '../currency/currency';
+
 
 export interface ApiBlock {
   height: number;
@@ -20,6 +22,7 @@ export interface ApiBlock {
   version: number;
   time: Date;
   timeNormalized: Date;
+  btcTxHash?: string;
 }
 
 export interface AppBlock {
@@ -45,7 +48,8 @@ export interface AppBlock {
     url: string;
   };
   reward: number;
-  minedBy: string;
+  btcTxHash: string;
+  isAnchor: boolean;
 }
 
 @Injectable()
@@ -67,7 +71,7 @@ export class BlocksProvider {
       merkleroot: block.merkleRoot,
       version: block.version,
       difficulty,
-      bits: block.bits.toString(16),
+      bits: '0x' + block.bits.toString(16),
       hash: block.hash,
       time: new Date(block.time).getTime() / 1000,
       tx: {
@@ -81,7 +85,8 @@ export class BlocksProvider {
         url: ''
       },
       reward: block.reward,
-      minedBy: block.minedBy,
+      btcTxHash: block.btcTxHash || null,
+      isAnchor: !!block.btcTxHash,
     };
   }
 
@@ -90,8 +95,8 @@ export class BlocksProvider {
     return this.httpClient.get<ApiBlock>(heightUrl);
   }
 
-  public getBlocks(numBlocks: number = 10): Observable<ApiBlock[]> {
-    const url: string = this.api.getUrl() + '/block?limit=' + numBlocks;
+  public getBlocks(numBlocks: number = 10, anchorsOnly: boolean = false,): Observable<ApiBlock[]> {
+    const url = `${this.api.getUrl()}/block?limit=${numBlocks}&anchorsOnly=${anchorsOnly}`;
     return this.httpClient.get<ApiBlock[]>(url);
   }
 
@@ -100,9 +105,10 @@ export class BlocksProvider {
    */
   public pageBlocks(
     since: number,
-    numBlocks: number = 10
+    numBlocks: number = 10,
+    anchorsOnly: boolean = false,
   ): Observable<ApiBlock[]> {
-    const url = `${this.api.getUrl()}/block?since=${since}&limit=${numBlocks}&paging=height&direction=-1`;
+    const url = `${this.api.getUrl()}/block?since=${since}&limit=${numBlocks}&paging=height&direction=-1&anchorsOnly=${anchorsOnly}`;
     return this.httpClient.get<ApiBlock[]>(url);
   }
 
