@@ -1,10 +1,10 @@
+import * as _ from 'lodash';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { DefaultProvider } from '../../providers/default/default';
-import { Logger } from '../../providers/logger/logger';
 
-import * as _ from 'lodash';
+import { DefaultProvider } from '../default/default';
+import { Logger } from '../logger/logger';
 
 export interface ChainNetwork {
   chain: string;

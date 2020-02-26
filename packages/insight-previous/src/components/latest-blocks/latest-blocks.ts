@@ -20,6 +20,8 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   public showLoadMoreButton = false;
   @Input()
   public showTimeAs: string;
+  @Input()
+  public showAnchoredBlocksButton = false;
   public loading = true;
   public blocks: AppBlock[] = [];
   public subscriber: Subscription;
@@ -52,7 +54,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   }
 
   private loadBlocks(): void {
-    this.subscriber = this.blocksProvider.getBlocks(this.numBlocks).subscribe(
+    this.subscriber = this.blocksProvider.getBlocks(this.numBlocks, this.showAnchoredBlocksButton).subscribe(
       response => {
         const blocks = response.map(block =>
           this.blocksProvider.toAppBlock(block)
@@ -74,7 +76,8 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
     clearInterval(this.reloadInterval);
     const since: number =
       this.blocks.length > 0 ? this.blocks[this.blocks.length - 1].height : 0;
-    return this.blocksProvider.pageBlocks(since, this.numBlocks).subscribe(
+
+    return this.blocksProvider.pageBlocks(since, this.numBlocks, this.showAnchoredBlocksButton).subscribe(
       response => {
         const blocks = response.map(block =>
           this.blocksProvider.toAppBlock(block)
@@ -121,6 +124,13 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
       addrStr,
       chain: this.apiProvider.networkSettings.value.selectedNetwork.chain,
       network: this.apiProvider.networkSettings.value.selectedNetwork.network
+    });
+  }
+
+  public goToAnchoredBlocks(): void {
+    this.redirProvider.redir('anchored-blocks', {
+      chain: this.apiProvider.networkSettings.value.selectedNetwork.chain,
+      network: this.apiProvider.networkSettings.value.selectedNetwork.network,
     });
   }
 }

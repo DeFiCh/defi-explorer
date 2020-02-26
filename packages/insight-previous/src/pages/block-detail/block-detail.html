@@ -12,9 +12,13 @@
 
         <h1>Block #{{ block.height }}</h1>
         <p class="item-hash">
-          <b>Block Hash</b> {{ block.hash }} <button [copyToClipboard]="block.hash">
+          <b>Block Hash:</b> {{ block.hash }} <button [copyToClipboard]="block.hash">
             <ion-icon md="md-copy"></ion-icon>
           </button>
+        </p>
+        <p class="item-hash" [hidden]="!block.isAnchor">
+          <b>Bitcoin Anchor Tx Hash:</b>
+          <a target="_blank" href="{{ btcExplorerUrl + block.btcTxHash }}">{{ block.btcTxHash }}</a>
         </p>
 
         <h2>Summary</h2>
@@ -33,7 +37,6 @@
                   Height
                   <ion-note item-end>
                     {{ block.height }}
-                    <span [hidden]="!block.isMainChain">(Mainchain)</span>
                   </ion-note>
                 </ion-item>
                 <ion-item>
@@ -47,12 +50,6 @@
                   Timestamp
                   <ion-note item-end>
                     {{ block.time * 1000 | date:'medium' }}
-                  </ion-note>
-                </ion-item>
-                <ion-item>
-                  Mined by
-                  <ion-note item-end *ngIf="block.minedBy">
-                    <a (click)="goToAddress(block.minedBy)">{{ block.minedBy }}</a>
                   </ion-note>
                 </ion-item>
                 <ion-item>
