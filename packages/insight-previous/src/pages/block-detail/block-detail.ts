@@ -1,12 +1,11 @@
 import { Component, Injectable } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { ApiProvider, ChainNetwork } from '../../providers/api/api';
-import { BlocksProvider } from '../../providers/blocks/blocks';
+import { AppBlock, BlocksProvider } from '../../providers/blocks/blocks';
 import { CurrencyProvider } from '../../providers/currency/currency';
 import { Logger } from '../../providers/logger/logger';
 import { PriceProvider } from '../../providers/price/price';
 import { RedirProvider } from '../../providers/redir/redir';
-import { AppBlock } from '../../providers/blocks/blocks';
 import { TxsProvider } from '../../providers/transactions/transactions';
 
 @Injectable()

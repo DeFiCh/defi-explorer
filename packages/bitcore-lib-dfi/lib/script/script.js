@@ -1166,7 +1166,7 @@ Script.prototype.isAnchor = function isAnchor() {
       var br = new BufferReader(this.chunks[1].buf);
 
       if (!br.eof()) {
-        return br.readVarLengthBuffer().toString() === 'DfAf';
+        return br.read(4).toString() === 'DfAf';
       }
     }
   } catch(e) {}
@@ -1180,7 +1180,7 @@ Script.prototype.isAnchor = function isAnchor() {
  */
 Script.prototype.getAnchor = function getAnchor() {
   var br = new BufferReader(this.chunks[1].buf);
-  br.set({ pos: 5 });
+  br.set({ pos: 4 });
   var anchor = {};
 
   try {

@@ -1087,13 +1087,13 @@ describe('Script', function() {
         expect(Script().isAnchor()).to.equal(false);
         expect(Script('OP_RETURN').isAnchor()).to.equal(false);
         expect(Script('OP_RETURN 1 0x00').isAnchor()).to.equal(false);
-        expect(Script('OP_RETURN 2 0x0101').isAnchor()).to.equal(false);
-        expect(Script('OP_RETURN 5 0x0444664165').isAnchor()).to.equal(false);
+        expect(Script('OP_RETURN 2 0x01').isAnchor()).to.equal(false);
+        expect(Script('OP_RETURN 5 0x44664165').isAnchor()).to.equal(false);
       });
 
       it('should return true for valid script', function() {
-        expect(Script('OP_RETURN 5 0x0444664166').isAnchor()).to.equal(true);
-        expect(Script('OP_RETURN 41 0x044466416600000000000000000000000000000000000000000000000000000000000000000000000100000000').isAnchor()).to.equal(true);
+        expect(Script('OP_RETURN 5 0x44664166').isAnchor()).to.equal(true);
+        expect(Script('OP_RETURN 41 0x4466416600000000000000000000000000000000000000000000000000000000000000000000000100000000').isAnchor()).to.equal(true);
       });
     });
 
@@ -1103,15 +1103,15 @@ describe('Script', function() {
       });
 
       it('should throw error for not valid script', function() {
-        var s1 = Script('OP_RETURN 5 0x0444664166');
+        var s1 = Script('OP_RETURN 5 0x44664166');
         expect(s1.getAnchor.bind(s1)).to.throw('End of file');
-        var s2 = Script('OP_RETURN 44 0x0444664166000000000000000000000000000000000000000000000000000000000000000000000001000000');
+        var s2 = Script('OP_RETURN 44 0x44664166000000000000000000000000000000000000000000000000000000000000000000000001000000');
         expect(s2.getAnchor.bind(s2)).to.throw('Index out of range');
       });
 
       it('should return anchorBlockHash', function() {
         expect(
-          Script('OP_RETURN OP_PUSHDATA2 109 0x0444664166000000000000000000000000000000000000000000000000000000000000000010000000010000000001000000001000000')
+          Script('OP_RETURN OP_PUSHDATA2 109 0x44664166000000000000000000000000000000000000000000000000000000000000000010000000010000000001000000001000000')
             .getAnchor(),
         ).to.deep.equal({
           btcTxHash: '0000000000000000000000000000000000000000000000000000000000000000',
@@ -1122,7 +1122,7 @@ describe('Script', function() {
 
       it('should return anchorBlockHash from Buffer', function () {
         expect(
-          Script(Buffer.from('6a4d2d0004446641661c669f5a5ca05657405e6982c42f4ee1621309e65838eb3fae0d83d53487eda01000000001000000', 'hex'))
+          Script(Buffer.from('6a4d2d00446641661c669f5a5ca05657405e6982c42f4ee1621309e65838eb3fae0d83d53487eda01000000001000000', 'hex'))
             .getAnchor(),
         ).to.deep.equal(
           {
@@ -1131,6 +1131,17 @@ describe('Script', function() {
             prevAnchorBlockHeight: 1,
           }
         );
+      });
+
+      it('should return anchorBlockHash for testnet tx', function () {
+        expect(
+          Script(Buffer.from('6a4daa01446641663b2de56fe77d740ebcc3f77659ea29b8578a1dcbcc4cce9c67b61ad54a15a44e2d2c0100d42a010075544aaeebee131e8ec7cdb8e1856e300459212801041e44f9c24c1085b1d280350af78c061c69cc2d5e2b8ea722de3e0478bcff36cd869551e4cdd61c5b973b63dac26d40e0dbdcaa27457a36c445765169b899863909638e8cbd3ff0b53f280bc618775d5d041e44f9c24c1085b1d280350af78c061c69cc2d5e2b8ea722de3e0478bcff36cd869551e4cdd61c5b973b63dac26d40e0dbdcaa27457a36c445765169b899863909638e8cbd3ff0b53f280bc618775d5d03412078d68f54e8639e901433b4af6c6fb50ec0a7a87ec32897b60bb8df837e4bb81f26a3165cc8a7f7662716a56bdc87ca673b37f07e07715095652521daf2e4c33c41206f1f6ca8f6ba957f050f5bc915bcfb4bbbf4219588c149fb92bd53c5311adad215ee70879106eaaf0a3ea26aeedc61735adffcf985e23dffd4137d65e1d72a6b41200bf0ee10a2097efc35f174936194ab636916448df706a37d99daba4a7c96e55c792f1271280acd1a0999cdf2916c175d91cd2c4e455a66554f8d1ecdc3cdec71', 'hex'))
+            .getAnchor(),
+        ).to.deep.equal({
+          anchorBlockHeight: 76845,
+          btcTxHash: '4ea4154ad51ab6679cce4ccccb1d8a57b829ea5976f7c3bc0e747de76fe52d3b',
+          prevAnchorBlockHeight: 76500,
+        });
       });
     });
   });
