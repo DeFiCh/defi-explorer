@@ -141,6 +141,7 @@ export class TransactionComponent implements OnInit {
         tmp[address].doubleSpentIndex || items[i].doubleSpentIndex;
       tmp[address].dbError = tmp[address].dbError || items[i].dbError;
       tmp[address].valueSat += Math.round(items[i].value * this.COIN);
+      tmp[address].value = items[i].value;
       tmp[address].items.push(items[i]);
       tmp[address].notAddr = notAddr;
 
