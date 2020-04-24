@@ -29863,7 +29863,7 @@ addNetwork({
   xpubkey: 0x0488b21e,
   xprivkey: 0x0488ade4,
   networkMagic: 0xf9beb4d9,
-  port: 8323,
+  port: 8555,
   dnsSeeds: []
 });
 
@@ -29882,7 +29882,7 @@ addNetwork({
   xpubkey: 0x043587cf,
   xprivkey: 0x04358394,
   networkMagic: 0x0b110907,
-  port: 18323,
+  port: 18555,
   dnsSeeds: []
 });
 
@@ -29901,7 +29901,7 @@ addNetwork({
   xpubkey: 0x043587cf,
   xprivkey: 0x04358394,
   networkMagic: 0xfabfb5da,
-  port: 18444,
+  port: 19555,
   dnsSeeds: []
 });
 
