@@ -1,0 +1,30 @@
+{
+  "bitcoreNode": {
+    "services": {
+      "api": {
+        "wallets": {
+          "allowCreationBeforeCompleteSync": true
+        }
+      }
+    },
+    "chains": {
+      "DFI": {
+        "testnet": {
+          "chainSource": "p2p",
+          "trustedPeers": [
+            {
+              "host": "defichain",
+              "port": 18555
+            }
+          ],
+          "rpc": {
+            "host": "defichain",
+            "port": 18554,
+            "username": "<random_username>",
+            "password": "<random_password>"
+          }
+        }
+      }
+    }
+  }
+}
