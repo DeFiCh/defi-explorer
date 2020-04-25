@@ -1,7 +1,6 @@
 *debug.log
 node_modules/
 .env
-*bitcore.config.*
 .vscode
 .DS_Store
 .idea
