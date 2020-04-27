@@ -27,7 +27,7 @@
   },
   "scripts": {
     "clean": "ionic-app-scripts clean",
-    "build:prod": "ENV=prod CHAIN=DFI NETWORK=testnet API_PREFIX=http://127.0.0.1:3000/api npm run ionic:build --prod",
+    "build:prod": "npm run ionic:build --prod",
     "serve:prod": "npm run clean && npm run build:prod && npm run serve",
     "serve": "serve www",
     "ionic:build": "ionic-app-scripts build",
