@@ -1,15 +1,30 @@
-version: '3'
+version: '3.3'
+
 services:
   database:
     image: mongo:3.4-jessie
-    # network_mode: host
     networks:
       - default
     ports:
-    - 27017:27017
+    - 27017
     volumes:
-    - /data/db2:/data/db
+    - db_data:/data/db
     restart: always
+
+  defichain:
+    build: ./defichain
+    networks: 
+      - default
+    ports:
+      - 8555
+      - 8554
+      - 18555
+      - 18554
+      - 19555
+      - 19554
+    volumes:
+      - node_data:/data
+      - ./defichain/defi.testnet.conf:/root/.defi/defi.conf
 
   bitcore-node:
     build: .
@@ -17,7 +32,7 @@ services:
     # network_mode: host
     networks:
       - default
-    command: ["npm", "run", "node"]
+    command: "bash -c 'cd ./packages/bitcore-node/; npm run tsc; node build/src/server.js'"
     ports:
       - 3000:3000
     environment:
@@ -25,8 +40,11 @@ services:
       - NETWORK=testnet
       - CHAIN=DFI
       - BITCORE_CONFIG_PATH=bitcore.config.json
+    volumes: 
+      - ./bitcore.config.json:/usr/src/app/bitcore.config.json
     depends_on:
       - database
+      - defichain
     restart: always
 
   insight:
@@ -37,13 +55,19 @@ services:
       - default
     command: ["npm", "run", "insight-previous:prod"]
     ports:
-      - 8200:5000
+      - 80:5000
     environment:
       - ENV=prod
       - NETWORK=testnet
       - CHAIN=DFI
-      - API_PREFIX=http://127.0.0.1:3000/api
+      - API_PREFIX=http://explorer.defichain.io:3000/api
       - BITCORE_CONFIG_PATH=bitcore.config.json
+    volumes: 
+      - ./bitcore.config.json:/usr/src/app/bitcore.config.json
     depends_on:
       - bitcore-node
     restart: always
+
+volumes: 
+  db_data:
+  node_data:
