@@ -45,17 +45,16 @@ import { InsightApp } from './app.component';
 })
 export class AppModule {
   constructor(titleService: Title, defaults: DefaultProvider,) {
-    this.setTitle(titleService, defaults);
+    this.prefixCommonNetworkNameTitle(titleService, defaults);
   }
 
-  setTitle(titleService: Title, defaults: DefaultProvider) {
-    let env = defaults.getDefault("%NETWORK%");
+  prefixCommonNetworkNameTitle(titleService: Title, defaults: DefaultProvider) {
+    let network = defaults.getDefault("%NETWORK%").toLowerCase();
     let prefix = "";
-    if (env === "mainnet")
-      prefix = "Mainnet - ";
-    else if (env === "testnet")
-      prefix = "Testnet - ";
-    let title = prefix + "DeFi Blockchain Explorer";
-    titleService.setTitle(title);
+    if (network === "mainnet") prefix = "Mainnet - ";
+    else if (network === "testnet") prefix = "Testnet - ";
+    if (prefix.length) {
+      titleService.setTitle(prefix + titleService.getTitle());
+    }
   }
 }

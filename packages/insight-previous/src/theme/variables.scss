@@ -2,6 +2,9 @@
 // http://ionicframework.com/docs/v2/theming/
 $font-path: '../assets/fonts';
 
+@import "https://fonts.googleapis.com/css?family=IBM+Plex+Sans:300,300i,400,400i,700,700i&display=swap";
+@import "https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400&display=swap";
+
 @import 'ionic.globals';
 
 // Shared Variables
@@ -62,13 +65,15 @@ $colors: (
 // Fonts
 // --------------------------------------------------
 
-@font-face {
-  font-family: Ubuntu;
-  src: url('../assets/fonts/ubuntu.woff2') format('woff2');
-}
+// @font-face {
+//   font-family: Ubuntu;
+//   src: url('../assets/fonts/ubuntu.woff2') format('woff2');
+// }
 * {
-  font-family: Ubuntu;
-  font-size: 14px;
+  // font-family: Ubuntu;
+  font-family: "IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-size: 1.4rem;
+  font-weight: 400;
 }
 
 // Other globals

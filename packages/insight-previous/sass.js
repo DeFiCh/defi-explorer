@@ -68,7 +68,8 @@ module.exports = {
    * to be imported so their values override default variables.
    */
   variableSassFiles: [
-    process.env.NETWORK === "mainnet" ? '{{SRC}}/theme/mainnet.scss' : '{{SRC}}/theme/testnet.scss',
+    process.env.NETWORK && process.env.NETWORK.toLowerCase() === "mainnet" ?
+      '{{SRC}}/theme/mainnet.scss' : '{{SRC}}/theme/nonmainnet.scss',
     '{{SRC}}/theme/variables.scss'
   ],
 
