@@ -1,6 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { BlocksPage, HomePage, PagesModule } from '../pages';
 import { AddressProvider } from '../providers/address/address';
@@ -39,7 +39,23 @@ import { InsightApp } from './app.component';
     SearchProvider,
     RedirProvider,
     Logger,
-    AddressProvider
+    AddressProvider,
+    Title,
   ]
 })
-export class AppModule {}
+export class AppModule {
+  constructor(titleService: Title, defaults: DefaultProvider,) {
+    this.setTitle(titleService, defaults);
+  }
+
+  setTitle(titleService: Title, defaults: DefaultProvider) {
+    let env = defaults.getDefault("%NETWORK%");
+    let prefix = "";
+    if (env === "mainnet")
+      prefix = "Mainnet - ";
+    else if (env === "testnet")
+      prefix = "Testnet - ";
+    let title = prefix + "DeFi Blockchain Explorer";
+    titleService.setTitle(title);
+  }
+}

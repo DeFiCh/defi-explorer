@@ -16,7 +16,7 @@ services:
     networks: 
       - default
     environment: 
-      - NETWORK=${NETWORK:?network env required}
+      - NETWORK=${NETWORK:?NETWORK env required}
     ports:
       - 8555
       - 8554
@@ -39,7 +39,7 @@ services:
     ports:
       - 3000:3000
     environment:
-      - NETWORK=${NETWORK:?network env required}
+      - NETWORK=${NETWORK:?NETWORK env required}
       - DB_HOST=database
       - CHAIN=DFI
       - BITCORE_CONFIG_PATH=bitcore.config.json
@@ -60,9 +60,9 @@ services:
     ports:
       - 80:5000
     environment:
-      # - ENV=prod
-      - NETWORK=${NETWORK:?network env required}
-      - API_PREFIX=${API_PREFIX:?api_prefix env required}
+      - ENV=prod
+      - NETWORK=${NETWORK:?NETWORK env required}
+      - API_PREFIX=${API_PREFIX:?API_PREFIX env required}
       - CHAIN=DFI
       - BITCORE_CONFIG_PATH=bitcore.config.json
     volumes: 

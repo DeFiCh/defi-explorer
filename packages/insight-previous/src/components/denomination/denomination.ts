@@ -29,7 +29,7 @@ export class DenominationComponent {
         ? true
         : false;
       this.units = [
-        'USD',
+        // 'USD',
         this.api.networkSettings.value.selectedNetwork.chain,
         'm' + this.api.networkSettings.value.selectedNetwork.chain
       ];
