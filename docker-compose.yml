@@ -9,12 +9,14 @@ services:
     - 27017
     volumes:
     - db_data:/data/db
-    restart: always
+    restart: unless-stopped
 
   defichain:
     build: ./defichain
     networks: 
       - default
+    environment: 
+      - NETWORK=${NETWORK:?network env required}
     ports:
       - 8555
       - 8554
@@ -24,7 +26,8 @@ services:
       - 19554
     volumes:
       - node_data:/data
-      - ./defichain/defi.testnet.conf:/root/.defi/defi.conf
+      - ./defichain/defi.${NETWORK}.conf:/root/.defi/defi.conf
+    restart: unless-stopped
 
   bitcore-node:
     build: .
@@ -36,16 +39,16 @@ services:
     ports:
       - 3000:3000
     environment:
+      - NETWORK=${NETWORK:?network env required}
       - DB_HOST=database
-      - NETWORK=testnet
       - CHAIN=DFI
       - BITCORE_CONFIG_PATH=bitcore.config.json
     volumes: 
-      - ./bitcore.config.json:/usr/src/app/bitcore.config.json
+      - ./bitcore.${NETWORK}.config.json:/usr/src/app/bitcore.config.json
     depends_on:
       - database
       - defichain
-    restart: always
+    restart: unless-stopped
 
   insight:
     build: .
@@ -57,16 +60,16 @@ services:
     ports:
       - 80:5000
     environment:
-      - ENV=prod
-      - NETWORK=testnet
+      # - ENV=prod
+      - NETWORK=${NETWORK:?network env required}
+      - API_PREFIX=${API_PREFIX:?api_prefix env required}
       - CHAIN=DFI
-      - API_PREFIX=http://explorer.defichain.io:3000/api
       - BITCORE_CONFIG_PATH=bitcore.config.json
     volumes: 
-      - ./bitcore.config.json:/usr/src/app/bitcore.config.json
+      - ./bitcore.${NETWORK}.config.json:/usr/src/app/bitcore.config.json
     depends_on:
       - bitcore-node
-    restart: always
+    restart: unless-stopped
 
 volumes: 
   db_data:
