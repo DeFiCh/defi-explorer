@@ -2,7 +2,7 @@
   <ion-row>
     <ion-col col-7>
       <div class="ellipsis">
-        <span *ngIf="showCoins">
+        <span *ngIf="showCoins" style="margin-right: 5px;">
           <ion-icon name="add-circle" [hidden]="expanded" (click)="toggleExpanded()"></ion-icon>
           <ion-icon name="remove-circle" [hidden]="!expanded" (click)="toggleExpanded()"></ion-icon>
         </span>

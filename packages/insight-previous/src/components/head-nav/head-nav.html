@@ -13,11 +13,9 @@
 
     <ion-buttons>
       <button ion-button (click)="changeCurrency($event)" class="disable-hover">
-        {{ currencyProvider?.currencySymbol }}
-        &nbsp;
-        <i>( <span *ngIf="currencyProvider?.currencySymbol === 'USD'">{{ config?.chain }} - </span>
-          {{ config?.network }} )</i>
-        &nbsp;
+        <span *ngIf="currencyProvider?.currencySymbol === 'USD'">{{ config?.chain }} - </span>{{ config?.network }}
+        -&nbsp;<i>{{ currencyProvider?.currencySymbol }}</i>
+        &nbsp;&nbsp;&nbsp;&nbsp;
         <ion-icon name="md-arrow-dropdown"></ion-icon>
       </button>
     </ion-buttons>

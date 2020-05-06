@@ -10,7 +10,7 @@ head-nav {
 
   .toolbar-content {
     display: grid;
-    grid-template-columns: 20% 1fr 20%;
+    grid-template-columns: 15% 1fr 15%;
     justify-items: stretch;
     align-items: center;
       ion-title {
@@ -39,7 +39,7 @@ head-nav {
         
         vertical-align: middle;
         input {
-          width: 500px;
+          width: 650px;
           margin-top: 4px;
           padding: 9px 12px;
           color: rgba(255, 255, 255, 1);
