@@ -1,6 +1,9 @@
 footer {
+  .toolbar {
+    padding: 0 10px;
+  }
+
   .pages {
-    padding-top: 5px;
     color: #dde;
     float: left;
     a {
@@ -15,14 +18,12 @@ footer {
     }
     .version {
       color: grey;
-      font-style: italic;
+      font-size: 0.9em;
     }
     .logo {
       color: white;
       font-weight: 700;
-      font-style: italic;
-      font-size: 1.5em;
+      font-size: 0.8em;
     }
   }
-  
 }
