@@ -1,17 +1,17 @@
-ARG VERSION=1.0.0-beta1 
+ARG VERSION=1.0.0-internal3 
 
 FROM ubuntu:20.04 as builder
 ARG VERSION
 
 ENV DFI_PKG_FILE=defichain-${VERSION}-x86_64-pc-linux-gnu.tar.gz
-ENV DFI_PKG_URL=https://github.com/DeFiCh/ain/releases/download/v${VERSION}/${DFI_PKG_FILE}
+ENV DFI_PKG_PATH=./${DFI_PKG_FILE}
 
 WORKDIR /work
 
 RUN apt update && apt install wget -y
 
-RUN wget ${DFI_PKG_URL} && \
-    ls -lh ${DFI_PKG_FILE} && \
+COPY ${DFI_PKG_PATH} .
+RUN ls -lh ${DFI_PKG_FILE} && \
     tar -xvzf ${DFI_PKG_FILE}
 
 ### End of build ###
