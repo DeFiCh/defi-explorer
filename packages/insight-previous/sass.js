@@ -67,7 +67,10 @@ module.exports = {
    * only sass variables. These variables are the first sass files
    * to be imported so their values override default variables.
    */
-  variableSassFiles: ['{{SRC}}/theme/variables.scss'],
+  variableSassFiles: [
+    process.env.NETWORK === "mainnet" ? '{{SRC}}/theme/mainnet.scss' : '{{SRC}}/theme/testnet.scss',
+    '{{SRC}}/theme/variables.scss'
+  ],
 
   /**
    * directoryMaps: Compiled JS modules may be within a different

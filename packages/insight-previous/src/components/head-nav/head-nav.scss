@@ -1,4 +1,13 @@
 head-nav {
+
+  .icon-md-light {
+    color: rgba(255,255,255,.75);
+  }
+
+  .icon-md-dark {
+    color: rgba(255,255,255,.95);
+  }
+
   .toolbar-content {
     display: grid;
     grid-template-columns: 20% 1fr 20%;
@@ -12,7 +21,6 @@ head-nav {
             cursor: pointer;
             color: white;
             font-weight: 700;
-            font-style: italic;
             font-size: 2em;
             padding-left: 0px;
           }
@@ -34,20 +42,25 @@ head-nav {
           width: 500px;
           margin-top: 4px;
           padding: 9px 12px;
-          color: color($colors, light);
-          background-color: #7CAD23;
+          color: rgba(255, 255, 255, 1);
+          background-color: color($colors, primary-light);
           border: 0;
-          box-shadow: 1px 1px 0 0 rgba(255,255,255,.41), inset 1px 1px 3px 0 rgba(0,0,0,.10);
+          font-weight: 400;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+
+          &:focus {
+            border-bottom: 1px solid rgba(255, 255, 255, 1);
+          }
         }
         
         ::-webkit-input-placeholder {
-          color: #BCDF7E;
+          color: rgba(255, 255, 255, 0.6);
           font-style: italic;
           font-weight: 100;
         }
         
         ::-moz-placeholder {
-          color: #BCDF7E;
+          color: rgba(255, 255, 255, 0.6);
           font-family: 'Ubuntu', sans-serif;
           font-weight: 100;
         }

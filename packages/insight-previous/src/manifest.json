@@ -1,6 +1,6 @@
 {
-  "name": "Insight",
-  "short_name": "Insight",
+  "name": "DeFi Blockchain Explorer",
+  "short_name": "DFI Explorer",
   "start_url": "index.html",
   "display": "standalone",
   "icons": [
@@ -10,6 +10,6 @@
       "type": "image/png"
     }
   ],
-  "background_color": "#4e8ef7",
-  "theme_color": "#4e8ef7"
+  "background_color": "#5b10ff",
+  "theme_color": "#fff"
 }
