@@ -1,6 +1,6 @@
 # DeFi Blockchain Explorer
 
-An insight-based blockchain explorer that's built for DeFi Blockchain.
+An insight-based blockchain explorer that's built for the DeFi Blockchain ([defichain.io](https://defichain.io)).
 
 ## Start
 
@@ -25,7 +25,7 @@ user@host:~/src/defichain-explorer$ docker-compose up
 
 That's it. This should launch everything required (DeFi Blockchain node, Bitcore API server, MongoDB and Insight) in their respective containers.
 
-Please have a look at the `docker-compose.yml` file to other defaults and env usage.
+Please have a look at the `docker-compose.yml` file for other defaults and env usage.
 
 ## Configurations
 
@@ -45,7 +45,7 @@ NOTE: Please make sure to set a proper `rpc` username and password in both of th
 
 - `defichain/Dockerfile` - This dockerfile downloads the specific version of the DeFi Blockchain binary and builds a docker image out of it, that's used by the deployment subsequently. Modify `VERSION` here for running a different version of the blockchain node.
 
-For details on `bitcore` config, have a look at the [Bitcore README](./docs/Bitcore-README.md)
+For details on `bitcore` config, have a look at the [Bitcore README](./docs/Bitcore-README.md).
 
 ## Notes
 
