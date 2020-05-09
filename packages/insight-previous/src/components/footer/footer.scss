@@ -2,6 +2,9 @@ footer {
   .toolbar {
     padding: 0 10px;
   }
+  .toolbar-md-dark .toolbar-background-md {
+    background: $dfi-footer;
+  }
 
   .pages {
     color: #dde;

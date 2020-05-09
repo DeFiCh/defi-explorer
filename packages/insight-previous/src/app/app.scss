@@ -14,6 +14,11 @@ body {
 a {
   cursor: pointer;
   text-decoration: none;
+  color: $blue;
+
+  &:hover, &:focus {
+    color: $dfi-purple;
+  }
 }
 
 .ellipsis {
