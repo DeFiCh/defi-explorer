@@ -1,11 +1,14 @@
 head-nav {
-
   .icon-md-light {
     color: rgba(255,255,255,.75);
   }
 
   .icon-md-dark {
     color: rgba(255,255,255,.95);
+  }
+
+  .toolbar-md {
+    min-height: 64px;
   }
 
   .toolbar-content {
@@ -40,29 +43,29 @@ head-nav {
         vertical-align: middle;
         input {
           width: 650px;
-          margin-top: 4px;
-          padding: 9px 12px;
+          margin-top: -2px;
+          padding: 8px 12px;
           color: rgba(255, 255, 255, 1);
-          background-color: color($colors, primary-light);
+          background-color: rgba(0, 0, 0, 0);
           border: 0;
           font-weight: 400;
           border-bottom: 1px solid rgba(255, 255, 255, 0.6);
 
-          &:focus {
+          &:hover {
             border-bottom: 1px solid rgba(255, 255, 255, 1);
           }
         }
         
         ::-webkit-input-placeholder {
-          color: rgba(255, 255, 255, 0.6);
+          color: rgba(255, 255, 255, 0.5);
           font-style: italic;
-          font-weight: 100;
+          font-weight: 400;
         }
         
         ::-moz-placeholder {
-          color: rgba(255, 255, 255, 0.6);
-          font-family: 'Ubuntu', sans-serif;
-          font-weight: 100;
+          color: rgba(255, 255, 255, 0.5);
+          font-style: italic;
+          font-weight: 400;
         }
       }
   }
@@ -74,5 +77,7 @@ head-nav {
     @media (min-width: map-get($grid-breakpoints, lg)) {
       display: none;
     }
+    width: 120px;
+    margin: 0 auto;
   }
 }
