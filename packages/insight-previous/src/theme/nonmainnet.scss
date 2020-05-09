@@ -1,3 +1,5 @@
 @import "./pre.scss";
 
-$dfi-brand: $dfi-purple-light;
+$dfi-brand-opaque: $dfi-gray;
+$dfi-brand: rgba($dfi-brand-opaque, 0.9);
+$dfi-footer: rgba(16, 16, 16, 0.85);
