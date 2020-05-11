@@ -49,10 +49,10 @@ export class AppModule {
   }
 
   prefixCommonNetworkNameTitle(titleService: Title, defaults: DefaultProvider) {
-    let network = defaults.getDefault("%NETWORK%").toLowerCase();
+    const network = defaults.getDefault("%NETWORK%").toLowerCase();
     let prefix = "";
-    if (network === "mainnet") prefix = "Mainnet - ";
-    else if (network === "testnet") prefix = "Testnet - ";
+    if (network === "mainnet") { prefix = "Mainnet - " }
+    else if (network === "testnet") { prefix = "Testnet - " };
     if (prefix.length) {
       titleService.setTitle(prefix + titleService.getTitle());
     }
