@@ -19,6 +19,12 @@ import { TxsProvider } from '../../providers/transactions/transactions';
   templateUrl: 'block-detail.html'
 })
 export class BlockDetailPage {
+  
+  static btcExplorers = {
+    testnet: 'https://live.blockcypher.com/btc-testnet/tx/',
+    mainnet: 'https://live.blockcypher.com/btc/tx/',
+  };
+
   public loading = true;
   public errorMessage: string;
   public confirmations: number;
@@ -27,11 +33,6 @@ export class BlockDetailPage {
 
   private blockHash: string;
   private chainNetwork: ChainNetwork;
-
-  static btcExplorers = {
-    testnet: 'https://live.blockcypher.com/btc-testnet/tx/',
-    mainnet: 'https://live.blockcypher.com/btc/tx/',
-  };
 
   constructor(
     public navParams: NavParams,
