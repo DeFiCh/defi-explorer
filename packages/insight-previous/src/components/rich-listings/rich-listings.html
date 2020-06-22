@@ -1,0 +1,41 @@
+<error [message]="errorMessage" *ngIf="errorMessage"></error>
+<div *ngIf="!errorMessage">
+  <ion-grid class="grid--table">
+    <ion-row>
+      <ion-col col-1><b>#</b></ion-col>
+      <ion-col><b>Address</b></ion-col>
+      <ion-col><b>Balance</b></ion-col>
+      <ion-col col-3><b>Last 30 Days Tx Count</b></ion-col>
+      <ion-col><b>First Tx Time</b></ion-col>
+      <ion-col><b>Last Tx Time</b></ion-col>
+    </ion-row>
+
+    <loader *ngIf="loading" [type]="'grid'"></loader>
+
+    <div *ngIf="!loading">
+      <ion-row *ngFor="let eachAddress of addressLists; index as i">
+        <ion-col col-1>
+          {{ i+1 }}
+        </ion-col>
+        <ion-col>
+          <a (click)="goToAddress(eachAddress.address)">
+            {{ eachAddress.address }}
+          </a>
+        </ion-col>
+        <ion-col>
+          {{ currencyProvider.getConvertedNumber(eachAddress.balance) | number
+          }} {{ currencyProvider.currencySymbol }}
+        </ion-col>
+        <ion-col col-3>
+          {{ eachAddress.txCount }}&nbsp;
+        </ion-col>
+        <ion-col>
+          {{ eachAddress.firstTxTime | amFromUnix | amTimeAgo }}&nbsp;
+        </ion-col>
+        <ion-col>
+          {{ eachAddress.lastTxTime | amFromUnix | amTimeAgo }}&nbsp;
+        </ion-col>
+      </ion-row>
+    </div>
+  </ion-grid>
+</div>
