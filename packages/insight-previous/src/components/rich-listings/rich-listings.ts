@@ -76,4 +76,8 @@ export class RichListingsComponent implements OnInit, OnDestroy {
       network: this.apiProvider.networkSettings.value.selectedNetwork.network
     });
   }
+
+  public getDate(dateStr: string) {
+    return new Date(dateStr).getTime();
+  }
 }
