@@ -63,6 +63,30 @@ class CoinModel extends BaseModel<ICoin> {
     );
   }
 
+  async prepareRichListRow(txIds) {
+    const data = {
+      txCount: '',
+      firstTxTime: '',
+      lastTxTime: ''
+    };
+    const tasks = [
+      TransactionStorage.getTransactionCount({ query: { txIds } }),
+      TransactionStorage.getFirstTransactionTime({
+        query: { txIds }
+      }),
+      TransactionStorage.getLastTransactionTime({
+        query: { txIds }
+      })
+    ];
+
+    const taskResult = await Promise.all(tasks);
+
+    Object.keys(data).forEach((item, ind) => {
+      data[item] = taskResult[ind];
+    });
+    return data;
+  }
+
   async getRichList(params: { query: any }, options: CollectionAggregationOptions = {}) {
     const { pageNo, pageSize } = params.query;
 
@@ -88,17 +112,8 @@ class CoinModel extends BaseModel<ICoin> {
     const updatedResult = await Promise.all(
       result.map(async curr => {
         const txIds = await this.getTransactionIdsForAddress({ query: { address: curr.address } });
-
-        curr.txCount = await TransactionStorage.getTransactionCount({ query: { txIds } });
-
-        curr.firstTxTime = await TransactionStorage.getFirstTransactionTime({
-          query: { txIds }
-        });
-        curr.lastTxTime = await TransactionStorage.getLastTransactionTime({
-          query: { txIds }
-        });
-
-        return curr;
+        const data = await this.prepareRichListRow(txIds);
+        return Object.assign({}, curr, data);
       })
     );
 
