@@ -32,6 +32,11 @@ export declare namespace CSP {
     address: string;
   };
 
+  export type GetRichListParams = ChainNetwork & {
+    pageNo: number;
+    pageSize: number;
+  }
+
   export type GetBlockParams = ChainNetwork & {
     blockId?: string;
     sinceBlock?: number | string;
@@ -126,6 +131,7 @@ export declare namespace CSP {
     getBalanceForAddress(
       params: GetBalanceForAddressParams
     ): Promise<{ confirmed: number; unconfirmed: number; balance: number }>;
+    getRichList(params: GetRichListParams): Promise<any>;
     getBlock(params: GetBlockParams): Promise<IBlock | string>;
     streamBlocks(params: StreamBlocksParams): any;
     getFee(params: GetEstimateSmartFeeParams): any;
