@@ -34,6 +34,10 @@ class ChainStateProxy implements CSP.ChainStateProvider {
     return this.get(params).getBalanceForAddress(params);
   }
 
+  async getRichList(params: CSP.GetRichListParams) {
+    return this.get(params).getRichList(params);
+  }
+
   async getBlock(params: CSP.GetBlockParams) {
     return this.get(params).getBlock(params);
   }
