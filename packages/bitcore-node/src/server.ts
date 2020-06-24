@@ -5,6 +5,7 @@ import { Api } from './services/api';
 import cluster = require('cluster');
 import parseArgv from './utils/parseArgv';
 import { Event } from './services/event';
+import { insertGenesisData } from './genesisData';
 require('heapdump');
 let args = parseArgv([], ['DEBUG']);
 const services: Array<any> = [];
@@ -43,4 +44,9 @@ const stop = async () => {
 process.on('SIGTERM', stop);
 process.on('SIGINT', stop);
 
-start();
+(async () => {
+  await start();
+
+  // insert data to db for pre-mined coins
+  await insertGenesisData();
+})();
