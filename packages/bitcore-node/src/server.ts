@@ -5,6 +5,7 @@ import { Api } from './services/api';
 import cluster = require('cluster');
 import parseArgv from './utils/parseArgv';
 import { Event } from './services/event';
+import { cacheClearTimer, cacheClearTimerID } from './schedular/cacheClearTimer';
 require('heapdump');
 let args = parseArgv([], ['DEBUG']);
 const services: Array<any> = [];
@@ -37,6 +38,7 @@ const stop = async () => {
   for (const service of services.reverse()) {
     await service.stop();
   }
+  if (cacheClearTimerID) clearInterval(cacheClearTimerID);
   process.exit();
 };
 
@@ -44,3 +46,4 @@ process.on('SIGTERM', stop);
 process.on('SIGINT', stop);
 
 start();
+if (!cacheClearTimerID) cacheClearTimer();
