@@ -17,7 +17,7 @@ export type ICoin = {
   address: string;
   script: Buffer;
   wallets: Array<ObjectID>;
-  spentTxid: string;
+  spentTxid?: string;
   spentHeight: number;
   confirmations?: number;
 };
@@ -60,6 +60,13 @@ class CoinModel extends BaseModel<ICoin> {
       { wallets: 1, mintTxid: 1 },
       { background: true, partialFilterExpression: { 'wallets.0': { $exists: true } } }
     );
+  }
+
+  async insertGenesisCoins(coin: ICoin, address: string, mintTxid: string) {
+    const count = await this.collection.find({ address, mintTxid }).count();
+    if (count === 0) {
+      await this.collection.insert(coin);
+    }
   }
 
   async getBalance(params: { query: any }, options: CollectionAggregationOptions = {}) {
