@@ -539,6 +539,56 @@ export class TransactionModel extends BaseModel<ITransaction> {
     return this.collection.find(finalQuery, options).addCursorFlag('noCursorTimeout', true);
   }
 
+  async getTransactionCount(params: { query: any }) {
+    const { txIds } = params.query;
+
+    return this.collection
+      .find({
+        blockTimeNormalized: {
+          $gte: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000)
+        },
+        txid: {
+          $in: txIds
+        }
+      })
+      .addCursorFlag('noCursorTimeout', true)
+      .count();
+  }
+
+  async getFirstTransactionTime(params: { query: any }) {
+    const { txIds } = params.query;
+
+    const firstTransactionTime = await this.collection
+      .find({
+        txid: {
+          $in: txIds
+        }
+      })
+      .addCursorFlag('noCursorTimeout', true)
+      .sort({ blockTimeNormalized: 1 })
+      .limit(1)
+      .toArray();
+
+    return firstTransactionTime[0].blockTimeNormalized;
+  }
+
+  async getLastTransactionTime(params: { query: any }) {
+    const { txIds } = params.query;
+
+    const lastTransactionTime = await this.collection
+      .find({
+        txid: {
+          $in: txIds
+        }
+      })
+      .addCursorFlag('noCursorTimeout', true)
+      .sort({ blockTimeNormalized: -1 })
+      .limit(1)
+      .toArray();
+
+    return lastTransactionTime[0].blockTimeNormalized;
+  }
+
   _apiTransform(tx: Partial<MongoBound<ITransaction>>, options?: TransformOptions): TransactionJSON | string {
     const transaction: TransactionJSON = {
       _id: tx._id ? tx._id.toString() : '',

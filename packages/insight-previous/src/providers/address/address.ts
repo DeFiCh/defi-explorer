@@ -12,6 +12,14 @@ export interface ApiAddr {
   balance: number;
 }
 
+export interface ApiRichList {
+  address: string;
+  txCount?: number;
+  balance: string;
+  firstTxTime?: Date;
+  lastTxTime?: Date;
+}
+
 @Injectable()
 export class AddressProvider {
   constructor(
@@ -31,6 +39,12 @@ export class AddressProvider {
   public getAddressActivity(addrStr?: string): Observable<ApiCoin[]> {
     return this.httpClient.get<ApiCoin[]>(
       this.api.getUrl() + `/address/${addrStr}/txs?limit=1000`
+    );
+  }
+
+  public getRichAddress(): Observable<ApiRichList[]> {
+    return this.httpClient.get<ApiRichList[]>(
+      this.api.getUrl() + `/address/stats/rich-list?pageno=1&pagesize=100`
     );
   }
 }

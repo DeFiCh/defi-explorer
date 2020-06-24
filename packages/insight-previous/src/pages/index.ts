@@ -5,4 +5,5 @@ export * from './blocks/blocks';
 export * from './broadcast-tx/broadcast-tx';
 export * from './messages/messages';
 export * from './transaction/transaction';
+export * from './rich-list/rich-list';
 export * from './pages.module';
