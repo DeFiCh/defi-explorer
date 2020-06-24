@@ -6,6 +6,8 @@ import { valueOrDefault } from '../utils/check';
 import { StorageService } from '../services/storage';
 import { BlockStorage } from './block';
 import { TransactionStorage } from './transaction';
+import LruCache from '../LruCache';
+import { RICH_LIST_PAGE_SIZE } from '../constants/config';
 
 export type ICoin = {
   network: string;
@@ -88,7 +90,7 @@ class CoinModel extends BaseModel<ICoin> {
   }
 
   async getRichList(params: { query: any }, options: CollectionAggregationOptions = {}) {
-    const { pageNo, pageSize } = params.query;
+    const { pageNo } = params.query;
 
     const result: any = await this.collection
       .aggregate(
@@ -102,8 +104,8 @@ class CoinModel extends BaseModel<ICoin> {
             }
           },
           { $sort: { balance: -1 } },
-          { $skip: pageSize * (pageNo - 1) },
-          { $limit: pageSize }
+          { $skip: RICH_LIST_PAGE_SIZE * (pageNo - 1) },
+          { $limit: RICH_LIST_PAGE_SIZE }
         ],
         options
       )
@@ -116,6 +118,9 @@ class CoinModel extends BaseModel<ICoin> {
         return Object.assign({}, curr, data);
       })
     );
+
+    // add data to cache
+    LruCache.put(pageNo, updatedResult);
 
     return updatedResult;
   }
