@@ -5,6 +5,7 @@ import { SpentHeightIndicators, CoinJSON } from '../types/Coin';
 import { valueOrDefault } from '../utils/check';
 import { StorageService } from '../services/storage';
 import { BlockStorage } from './block';
+import { TransactionStorage } from './transaction';
 
 export type ICoin = {
   network: string;
@@ -67,6 +68,54 @@ class CoinModel extends BaseModel<ICoin> {
     if (count === 0) {
       await this.collection.insert(coin);
     }
+  }
+  
+  async getRichList(params: { query: any }, options: CollectionAggregationOptions = {}) {
+    const { pageNo, pageSize } = params.query;
+
+    const result: any = await this.collection
+      .aggregate(
+        [
+          { $group: { _id: '$address', balance: { $sum: '$value' } } },
+          {
+            $project: {
+              _id: 0,
+              address: '$_id',
+              balance: 1
+            }
+          },
+          { $sort: { balance: -1 } },
+          { $skip: pageSize * (pageNo - 1) },
+          { $limit: pageSize }
+        ],
+        options
+      )
+      .toArray();
+
+    const updatedResult = await Promise.all(
+      result.map(async curr => {
+        const txIds = await this.getTransactionIdsForAddress({ query: { address: curr.address } });
+
+        curr.txCount = await TransactionStorage.getTransactionCount({ query: { txIds } });
+
+        curr.firstTxTime = await TransactionStorage.getFirstTransactionTime({
+          query: { txIds }
+        });
+        curr.lastTxTime = await TransactionStorage.getLastTransactionTime({
+          query: { txIds }
+        });
+
+        return curr;
+      })
+    );
+
+    return updatedResult;
+  }
+
+  async getTransactionIdsForAddress(params: { query: any }) {
+    const { address } = params.query;
+    const result = await this.collection.distinct('mintTxid', { address });
+    return result;
   }
 
   async getBalance(params: { query: any }, options: CollectionAggregationOptions = {}) {
