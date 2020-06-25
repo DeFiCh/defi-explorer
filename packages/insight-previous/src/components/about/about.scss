@@ -1,7 +1,10 @@
 about {
-  background-color: #f4f4f4;
   padding: 1rem;
   position: absolute;
+
+  .row.about-card {
+    background-color: #f4f4f4;
+  }
 
   .title-color {
     color: #51AD55;

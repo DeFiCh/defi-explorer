@@ -1,20 +1,126 @@
-<ion-card>
-  <ion-card-header>
-    <ion-card-title>
-      <h2 class="title-color">
-        About
-      </h2>
-    </ion-card-title>
-  </ion-card-header>
-  <ion-card-content>
-    <p><strong>insight</strong><span> is an </span><a href="https://insight.is/" target="_blank">open-source Zcoin
-        blockchain explorer</a><span> with complete REST and websocket APIs that can
-        be used for writing web wallets and other apps
-        that need more advanced blockchain queries than provided by zcoind RPC. Check out the </span><a
-        href="https://github.com/zcoinofficial/insight-ui-zcoin" target="_blank">source code</a><span>.</span></p>
-    <p><strong>insight</strong><span> is still in development, so be sure
-        to report any bugs and provide feedback for improvement at our </span><a
-        href="https://github.com/zcoinofficial/insight-ui-zcoin/issues" target="_blank">github issue
-        tracker</a><span>.</span></p>
-  </ion-card-content>
-</ion-card>
+<ion-row class="about-card">
+  <ion-col col-12>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <h2 class="title-color">
+            About
+          </h2>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-row>
+          <ion-col col-12>
+            <p>DeFi Blockchain’s primary vision is to enable decentralized finance with Bitcoin-grade security,
+              strength and
+              immutability. It's a blockchain dedicated to fast, intelligent and transparent financial services,
+              accessible
+              by everyone.</p>
+            <p>For more information:</p>
+            <ul>
+              <li>Visit the <a href="https://defichain.io" rel="nofollow">DeFi Blockchain website</a></li>
+              <li>Read our <a href="https://defichain.io/white-paper/" rel="nofollow">white paper</a></li>
+            </ul>
+            <p>Downloadable binaries are available at</p>
+          </ion-col>
+        </ion-row>
+      </ion-card-content>
+    </ion-card>
+  </ion-col>
+  <ion-col col-12>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <h2 class="title-color">
+            Quick Stats
+          </h2>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <error [message]="errorMessage" *ngIf="errorMessage"></error>
+        <loader *ngIf="loading" [type]="'title'"></loader>
+        <div *ngIf="!errorMessage && !loading">
+          <ion-row>
+            <ion-col col-12>
+              <h5>General Information</h5>
+            </ion-col>
+            <ion-col col-6>
+              Chain
+            </ion-col>
+            <ion-col col-6 text-right>
+              {{quickStats.chain}}
+            </ion-col>
+            <ion-col col-6>
+              Block Height
+            </ion-col>
+            <ion-col col-6 text-right>
+              {{quickStats.blockHeight}}
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-12>
+              <h5>
+                Rewards
+              </h5>
+            </ion-col>
+            <ion-col col-6>
+              Foundation Percent
+            </ion-col>
+            <ion-col col-6 text-right>
+              {{quickStats.rewards.foundationPercent}}
+            </ion-col>
+            <ion-col col-6>
+              Total
+            </ion-col>
+            <ion-col col-6 text-right>
+              {{quickStats.rewards.total}}
+            </ion-col>
+            <ion-col col-6>
+              Foundation
+            </ion-col>
+            <ion-col col-6 text-right>
+              {{quickStats.rewards.foundation}}
+            </ion-col>
+            <ion-col col-6>
+              Minter
+            </ion-col>
+            <ion-col col-6 text-right>
+              {{quickStats.rewards.minter}}
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-12>
+              <h5>
+                Supply
+              </h5>
+            </ion-col>
+            <ion-col col-6>
+              Total
+            </ion-col>
+            <ion-col col-6 text-right>
+              {{quickStats.supply.total}}
+            </ion-col>
+            <ion-col col-6>
+              Circulation
+            </ion-col>
+            <ion-col col-6 text-right>
+              {{quickStats.supply.circulation}}
+            </ion-col>
+            <ion-col col-6>
+              Foundation
+            </ion-col>
+            <ion-col col-6 text-right>
+              {{quickStats.supply.foundation}}
+            </ion-col>
+            <ion-col col-6>
+              Community
+            </ion-col>
+            <ion-col col-6 text-right>
+              {{quickStats.supply.community}}
+            </ion-col>
+          </ion-row>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </ion-col>
+</ion-row>
