@@ -48,12 +48,12 @@ export class BlockModel extends BaseModel<IBlock> {
     }
   }
 
-  async insertGenesisBlock(block: IBlock, hash: string) {
-    const count = await this.collection.find({hash}).count();
-    if(count === 0){
+  async insertGenesisBlock(block: IBlock, height: number) {
+    const count = await this.collection.find({ height }).count();
+    if (count === 0) {
       await this.collection.insert(block);
     }
-  };
+  }
 
   async addBlock(params: {
     block: Defichain.Block;
@@ -82,14 +82,7 @@ export class BlockModel extends BaseModel<IBlock> {
     chain: string;
     network: string;
   }) {
-    const {
-      chain,
-      network,
-      block,
-      parentChain,
-      forkHeight,
-      initialSyncComplete,
-    } = params;
+    const { chain, network, block, parentChain, forkHeight, initialSyncComplete } = params;
     const blockOp = await this.getBlockOp(params);
     const convertedBlock = blockOp.updateOne.update.$set;
     const { height, timeNormalized, time } = convertedBlock;
@@ -105,8 +98,7 @@ export class BlockModel extends BaseModel<IBlock> {
       logger.debug('Updating previous block.nextBlockHash ', convertedBlock.hash);
     }
 
-    await this.processAnchor({ txs: block.transactions, chain, network })
-      .catch(e => logger.error(e));
+    await this.processAnchor({ txs: block.transactions, chain, network }).catch(e => logger.error(e));
 
     await TransactionStorage.batchImport({
       txs: block.transactions,
@@ -125,10 +117,7 @@ export class BlockModel extends BaseModel<IBlock> {
       EventStorage.signalBlock(convertedBlock);
     }
 
-    await this.collection.updateOne(
-      { hash: convertedBlock.hash, chain, network },
-      { $set: { processed: true } },
-    );
+    await this.collection.updateOne({ hash: convertedBlock.hash, chain, network }, { $set: { processed: true } });
     this.updateCachedChainTip({ block: convertedBlock, chain, network });
   }
 
@@ -166,7 +155,7 @@ export class BlockModel extends BaseModel<IBlock> {
       transactionCount: block.transactions.length,
       size: block.toBuffer().length,
       reward: block.transactions[0].outputAmount,
-      processed: false,
+      processed: false
     };
     return {
       updateOne: {
@@ -218,7 +207,7 @@ export class BlockModel extends BaseModel<IBlock> {
         this.updateCachedChainTip({ chain, network, block: prevBlock });
       } else {
         delete this.chainTips[chain][network];
-        logger.error('Previous block isn\'t in the DB need to roll back until we have a block in common');
+        logger.error("Previous block isn't in the DB need to roll back until we have a block in common");
       }
       logger.info(`Resetting tip to ${localTip.height - 1}`, { chain, network });
     }
@@ -238,7 +227,7 @@ export class BlockModel extends BaseModel<IBlock> {
     return true;
   }
 
-  async processAnchor(props: { txs: Array<Defichain.Transaction>, chain: string, network: string }) {
+  async processAnchor(props: { txs: Array<Defichain.Transaction>; chain: string; network: string }) {
     const { txs, chain, network } = props;
 
     for (let tx of txs) {
@@ -249,10 +238,7 @@ export class BlockModel extends BaseModel<IBlock> {
         const anchoredBlock = await this.collection.findOne({ height: anchorBlockHeight, chain, network });
 
         if (anchoredBlock) {
-          await this.collection.updateOne(
-            { hash: anchoredBlock.hash, chain, network },
-            { $set: { btcTxHash } },
-          );
+          await this.collection.updateOne({ hash: anchoredBlock.hash, chain, network }, { $set: { btcTxHash } });
         }
 
         break;
@@ -289,7 +275,7 @@ export class BlockModel extends BaseModel<IBlock> {
       /*
        *minedBy: BlockModel.getPoolInfo(block.minedBy)
        */
-      btcTxHash: block.btcTxHash,
+      btcTxHash: block.btcTxHash
     };
 
     if (options && options.object) {

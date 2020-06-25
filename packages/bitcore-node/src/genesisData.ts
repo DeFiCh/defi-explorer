@@ -4,76 +4,24 @@ import { ICoin, CoinStorage } from './models/coin';
 import { BlockStorage } from './models/block';
 import * as config from './constants/config';
 import { toSha256 } from './utils/crypto';
+import { IAddressAndAmount } from './interfaces';
+import { networkMap, defaultNetworkValue } from './networkAddressMapping';
 
-interface IAddressAndAmount {
-  address: string;
-  value: number;
-}
-
-const getAddressAndValueList = () => {
-  return [
-    { address: '8ZWWN1nX8drxJBSMG1VS9jH4ciBSvA9nxp', value: 58800000 },
-    { address: '8aGPBahDX4oAXx9okpGRzHPS3Td1pZaLgU', value: 44100000 },
-    { address: '8RGSkdaft9EmSXXp6b2UFojwttfJ5BY29r', value: 11760000 },
-    { address: '8L7qGjjHRa3Agks6incPomWCfLSMPYipmU', value: 11760000 },
-    { address: 'dcZ3NXrpbNWvx1rhiGvXStM6EQtHLc44c9', value: 29400000 },
-    { address: 'dMty9CfknKEaXqJuSgYkvvyF6UB6ffrZXG', value: 14700000 },
-    { address: 'dZcY1ZNm5bkquz2J74smKqokuPoVpPvGWu', value: 64680000 },
-    { address: 'dP8dvN5pnwbsxFcfN9DyqPVZi1fVHicDd2', value: 235200000 },
-    { address: 'dMs1xeSGZbGnTJWqTwjR4mcjp2egpEXG6M', value: 117600000 }
-  ];
-};
-
-const getGenesisBlock = (blockTime: Date, merkleRoot: string) => {
-  return {
-    chain: config.CHAIN,
-    hash: config.GENESIS_BLOCK_HASH,
-    network: config.NETWORK,
-    height: config.GENESIS_BLOCK_HEIGHT,
-    version: 536870912,
-    nextBlockHash: config.NEXT_BLOCK_HASH,
-    previousBlockHash: config.PREVIOUS_BLOCK_HASH,
-    merkleRoot,
-    time: blockTime,
-    timeNormalized: blockTime,
-    bits: 486604799,
-    transactionCount: 1,
-    size: 357,
-    reward: 20000000000,
-    processed: true
-  };
-};
-
-const getGenesisTransaction = (txid: string, blockTime: Date, outputCount: number) => {
-  return {
-    chain: config.CHAIN,
-    network: config.NETWORK,
-    txid,
-    blockHeight: config.GENESIS_BLOCK_HEIGHT,
-    blockHash: config.GENESIS_BLOCK_HASH,
-    blockTime,
-    blockTimeNormalized: blockTime,
-    coinbase: true,
-    fee: 0,
-    size: config.TX_INPUTS * 180 + outputCount * 34 + 10 + config.TX_INPUTS,
-    locktime: 0,
-    inputCount: config.TX_INPUTS,
-    outputCount,
-    value: config.TOTAL_PREMINED_VALUE,
-    wallets: []
-  };
-};
-
-export const insertGenesisData = async () => {
+export const insertGenesisData = async (network: string) => {
   const blockTime = new Date();
-  const txid = toSha256(config.GENESIS_BLOCK_HASH);
+  const hash = network === config.MAINNET ? config.GENESIS_BLOCK_HASH_MAINNET : config.GENESIS_BLOCK_HASH_TESTNET;
+  const txid = toSha256(hash);
+
+  const { getGenesisBlock, getGenesisTransaction, getAddressAndValueList } =
+    networkMap.get(network) || defaultNetworkValue;
+
   const addressAndValueList: IAddressAndAmount[] = getAddressAndValueList();
 
-  const block: IBlock = getGenesisBlock(blockTime, txid);
+  const block: IBlock = getGenesisBlock(blockTime, txid, network);
 
-  const transaction: ITransaction = getGenesisTransaction(txid, blockTime, addressAndValueList.length);
+  const transaction: ITransaction = getGenesisTransaction(txid, blockTime, addressAndValueList.length, network);
 
-  await BlockStorage.insertGenesisBlock(block, config.GENESIS_BLOCK_HASH);
+  await BlockStorage.insertGenesisBlock(block, config.GENESIS_BLOCK_HEIGHT);
   await TransactionStorage.insertGenesisTransaction(transaction, txid);
 
   let mintIndex = 0;
@@ -82,7 +30,7 @@ export const insertGenesisData = async () => {
       chain: config.CHAIN,
       mintIndex,
       mintTxid: txid,
-      network: config.NETWORK,
+      network,
       address: addressAndValue.address,
       mintHeight: config.GENESIS_BLOCK_HEIGHT,
       coinbase: true,
