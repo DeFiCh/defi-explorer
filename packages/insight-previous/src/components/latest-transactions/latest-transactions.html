@@ -1,9 +1,7 @@
 <div>
-  <div *ngIf="loading">
-    <ion-spinner name="crescent"></ion-spinner>
-  </div>
-
-  <div *ngIf="!loading">
+  <error [message]="errorMessage" *ngIf="errorMessage"></error>
+  <loader *ngIf="loading" [type]="'grid'"></loader>
+  <div *ngIf="!loading && !errorMessage">
     <ion-grid class="grid--table">
 
       <ion-row>
