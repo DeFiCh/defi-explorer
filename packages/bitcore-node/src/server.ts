@@ -6,6 +6,7 @@ import cluster = require('cluster');
 import parseArgv from './utils/parseArgv';
 import { Event } from './services/event';
 import { insertGenesisData } from './genesisData';
+import { MAINNET, TESTNET } from './constants/config';
 require('heapdump');
 let args = parseArgv([], ['DEBUG']);
 const services: Array<any> = [];
@@ -47,6 +48,8 @@ process.on('SIGINT', stop);
 (async () => {
   await start();
 
-  // insert data to db for pre-mined coins
-  await insertGenesisData();
+  const network = process.env.NETWORK;
+  // insert data to db for pre-mined coins for mainnet and testnet
+  (network === MAINNET || network === TESTNET) && (await insertGenesisData(network));
+
 })();
