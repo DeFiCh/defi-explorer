@@ -5,7 +5,7 @@ import { Api } from './services/api';
 import cluster = require('cluster');
 import parseArgv from './utils/parseArgv';
 import { Event } from './services/event';
-import { cacheClearTimer, cacheClearTimerID } from './schedular/cacheClearTimer';
+import { cacheClearTimer, cacheClearTimerID } from './worker/schedular/cacheClearTimer';
 require('heapdump');
 let args = parseArgv([], ['DEBUG']);
 const services: Array<any> = [];

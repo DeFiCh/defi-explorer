@@ -1,5 +1,5 @@
-import LruCache from '../LruCache';
-import { CACHE_TTL } from '../constants/config';
+import LruCache from '../../LruCache';
+import { CACHE_TTL } from '../../constants/config';
 
 const schedular = () => {
   LruCache.clear();
