@@ -92,6 +92,8 @@ class CoinModel extends BaseModel<ICoin> {
   async getRichList(params: { query: any }, options: CollectionAggregationOptions = {}) {
     const { pageNo } = params.query;
 
+    if (LruCache.get(pageNo)) return LruCache.get(pageNo);
+
     const result: any = await this.collection
       .aggregate(
         [

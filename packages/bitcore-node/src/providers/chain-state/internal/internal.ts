@@ -80,8 +80,9 @@ export class InternalStateProvider implements CSP.IChainStateService {
       network,
       pageNo
     };
-    const balance = await CoinStorage.getRichList({query});
-    return balance;
+
+    const result = await CoinStorage.getRichList({query});
+    return result;
   }
 
   streamBlocks(params: CSP.StreamBlocksParams) {
