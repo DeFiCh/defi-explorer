@@ -95,6 +95,7 @@ class CoinModel extends BaseModel<ICoin> {
     const result: any = await this.collection
       .aggregate(
         [
+          { $match: { address: { $ne: 'false' } } },
           { $group: { _id: '$address', balance: { $sum: '$value' } } },
           {
             $project: {
