@@ -1,8 +1,8 @@
 import { CACHE_CLEAR_INTERVAL } from '../constants/config';
-import { CacheItem } from '../CacheItem';
+import { richListCache } from '../models/coin';
 
 const schedular = () => {
-  CacheItem.cacheMap.clear();
+  richListCache.clear();
 };
 
 export let cacheClearTimerID: NodeJS.Timer;

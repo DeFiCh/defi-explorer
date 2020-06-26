@@ -25,6 +25,8 @@ export type ICoin = {
   confirmations?: number;
 };
 
+export const richListCache = new Map();
+
 @LoggifyClass
 class CoinModel extends BaseModel<ICoin> {
   constructor(storage?: StorageService) {
@@ -91,7 +93,7 @@ class CoinModel extends BaseModel<ICoin> {
 
   async getRichList(params: { query: any }, options: CollectionAggregationOptions = {}) {
     const { pageNo } = params.query;
-    const cacheResult = CacheItem.cacheMap.get(pageNo);
+    const cacheResult = richListCache.get(pageNo);
 
     // Have time stamp within the last 300 seconds, skip fetching again.
     if (!cacheResult || !cacheResult.isRecent(CACHE_TTL_SECONDS)) {
@@ -125,7 +127,7 @@ class CoinModel extends BaseModel<ICoin> {
 
       // add data to cache
       const cache = new CacheItem(updatedResult);
-      CacheItem.cacheMap.set(pageNo, cache);
+      richListCache.set(pageNo, cache);
 
       return updatedResult;
     }
