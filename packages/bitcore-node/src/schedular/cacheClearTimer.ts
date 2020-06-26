@@ -1,12 +1,12 @@
-import LruCache from '../LruCache';
-import { CACHE_TTL } from '../constants/config';
+import { CACHE_CLEAR_INTERVAL } from '../constants/config';
+import { CacheItem } from '../CacheItem';
 
 const schedular = () => {
-  LruCache.clear();
+  CacheItem.cacheMap.clear();
 };
 
 export let cacheClearTimerID: NodeJS.Timer;
 
 export const cacheClearTimer = () => {
-  cacheClearTimerID = setInterval(schedular, CACHE_TTL);
+  cacheClearTimerID = setInterval(schedular, CACHE_CLEAR_INTERVAL);
 };
