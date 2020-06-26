@@ -6,8 +6,8 @@ import { valueOrDefault } from '../utils/check';
 import { StorageService } from '../services/storage';
 import { BlockStorage } from './block';
 import { TransactionStorage } from './transaction';
-import LruCache from '../LruCache';
-import { RICH_LIST_PAGE_SIZE } from '../constants/config';
+import { RICH_LIST_PAGE_SIZE, CACHE_TTL_SECONDS } from '../constants/config';
+import { CacheItem } from '../CacheItem';
 
 export type ICoin = {
   network: string;
@@ -24,6 +24,8 @@ export type ICoin = {
   spentHeight: number;
   confirmations?: number;
 };
+
+export const richListCache = new Map();
 
 @LoggifyClass
 class CoinModel extends BaseModel<ICoin> {
@@ -91,41 +93,52 @@ class CoinModel extends BaseModel<ICoin> {
 
   async getRichList(params: { query: any }, options: CollectionAggregationOptions = {}) {
     const { pageNo } = params.query;
+    const cacheResult = richListCache.get(pageNo);
 
-    if (LruCache.get(pageNo)) return LruCache.get(pageNo);
+    // Have time stamp within the last 300 seconds, skip fetching again.
+    if (!cacheResult || !cacheResult.isRecent(CACHE_TTL_SECONDS)) {
+      const result: any = await this.collection
+        .aggregate(
+          [
+            {
+              $match: {
+                address: { $ne: 'false' },
+                spentHeight: { $lt: SpentHeightIndicators.minimum },
+                mintHeight: { $gt: SpentHeightIndicators.conflicting }
+              }
+            },
+            { $group: { _id: '$address', balance: { $sum: '$value' } } },
+            {
+              $project: {
+                _id: 0,
+                address: '$_id',
+                balance: 1
+              }
+            },
+            { $sort: { balance: -1 } },
+            { $skip: RICH_LIST_PAGE_SIZE * (pageNo - 1) },
+            { $limit: RICH_LIST_PAGE_SIZE }
+          ],
+          options
+        )
+        .toArray();
 
-    const result: any = await this.collection
-      .aggregate(
-        [
-          { $match: { address: { $ne: 'false' } } },
-          { $group: { _id: '$address', balance: { $sum: '$value' } } },
-          {
-            $project: {
-              _id: 0,
-              address: '$_id',
-              balance: 1
-            }
-          },
-          { $sort: { balance: -1 } },
-          { $skip: RICH_LIST_PAGE_SIZE * (pageNo - 1) },
-          { $limit: RICH_LIST_PAGE_SIZE }
-        ],
-        options
-      )
-      .toArray();
+      const updatedResult = await Promise.all(
+        result.map(async curr => {
+          const txIds = await this.getTransactionIdsForAddress({ query: { address: curr.address } });
+          const data = await this.prepareRichListRow(txIds);
+          return Object.assign({}, curr, data);
+        })
+      );
 
-    const updatedResult = await Promise.all(
-      result.map(async curr => {
-        const txIds = await this.getTransactionIdsForAddress({ query: { address: curr.address } });
-        const data = await this.prepareRichListRow(txIds);
-        return Object.assign({}, curr, data);
-      })
-    );
+      // add data to cache
+      const cache = new CacheItem(updatedResult);
+      richListCache.set(pageNo, cache);
 
-    // add data to cache
-    LruCache.put(pageNo, updatedResult);
+      return updatedResult;
+    }
 
-    return updatedResult;
+    return cacheResult.value;
   }
 
   async getTransactionIdsForAddress(params: { query: any }) {
