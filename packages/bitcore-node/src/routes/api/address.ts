@@ -54,7 +54,10 @@ router.get('/stats/rich-list', async function(req, res) {
     }
 
     queue.push(
-      { methodName: ChainStateProvider.getRichList.bind(ChainStateProvider), params: [{ chain, network, pageNo: pageno }] },
+      {
+        methodName: ChainStateProvider.getRichList.bind(ChainStateProvider),
+        params: [{ chain, network, pageNo: pageno }]
+      },
       (err, result) => {
         if (err) {
           throw new Error(err.message);
@@ -62,7 +65,6 @@ router.get('/stats/rich-list', async function(req, res) {
         res.send(result || []);
       }
     );
-
   } catch (err) {
     return res.status(500).send(err);
   }
