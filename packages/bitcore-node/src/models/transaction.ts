@@ -558,11 +558,11 @@ export class TransactionModel extends BaseModel<ITransaction> {
         }
       })
       .addCursorFlag('noCursorTimeout', true)
-      .sort({ blockTimeNormalized: 1 })
+      .sort({ blockTime: 1 })
       .limit(1)
       .toArray();
 
-    return firstTransactionTime[0].blockTimeNormalized;
+    return firstTransactionTime[0].blockTime;
   }
 
   async getLastTransactionTime(params: { query: any }) {
@@ -575,11 +575,11 @@ export class TransactionModel extends BaseModel<ITransaction> {
         }
       })
       .addCursorFlag('noCursorTimeout', true)
-      .sort({ blockTimeNormalized: -1 })
+      .sort({ blockTime: -1 })
       .limit(1)
       .toArray();
 
-    return lastTransactionTime[0].blockTimeNormalized;
+    return lastTransactionTime[0].blockTime;
   }
 
   _apiTransform(tx: Partial<MongoBound<ITransaction>>, options?: TransformOptions): TransactionJSON | string {
