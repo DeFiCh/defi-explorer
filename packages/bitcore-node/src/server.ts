@@ -34,11 +34,11 @@ const start = async () => {
 };
 
 const stop = async () => {
+  if (cacheClearTimerID) clearInterval(cacheClearTimerID);
   console.log(`Shutting down ${process.pid}`);
   for (const service of services.reverse()) {
     await service.stop();
   }
-  if (cacheClearTimerID) clearInterval(cacheClearTimerID);
   process.exit();
 };
 
