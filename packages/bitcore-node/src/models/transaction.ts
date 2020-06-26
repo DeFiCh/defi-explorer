@@ -537,7 +537,7 @@ export class TransactionModel extends BaseModel<ITransaction> {
 
     return this.collection
       .find({
-        blockTimeNormalized: {
+        blockTime: {
           $gte: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000)
         },
         txid: {
