@@ -100,7 +100,13 @@ class CoinModel extends BaseModel<ICoin> {
       const result: any = await this.collection
         .aggregate(
           [
-            { $match: { address: { $ne: 'false' } } },
+            {
+              $match: {
+                address: { $ne: 'false' },
+                spentHeight: { $lt: SpentHeightIndicators.minimum },
+                mintHeight: { $gt: SpentHeightIndicators.conflicting }
+              }
+            },
             { $group: { _id: '$address', balance: { $sum: '$value' } } },
             {
               $project: {
