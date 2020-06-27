@@ -21,7 +21,7 @@ COPY ./packages/bitcore-node/package.json ./packages/bitcore-node/package.json
 #COPY ./packages/insight/package.json ./packages/insight/package.json
 COPY ./packages/insight-previous/package.json ./packages/insight-previous/package.json
 
-RUN ./node_modules/.bin/lerna bootstrap
+RUN ./node_modules/.bin/lerna bootstrap --concurrency=1
 
 COPY . .
 #EXPOSE 3000
