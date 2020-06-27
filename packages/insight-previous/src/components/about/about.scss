@@ -1,3 +1,66 @@
 about {
-  padding: 1rem;
+  .about-card {
+    padding: 0 15px;
+  }
+
+  h2 {
+    margin: 0;
+    margin-top: 5px;
+    margin-bottom: 2rem;
+  }
+
+  h2.main-heading {
+    margin-top: 15px;
+  }
+
+  h5 {
+    margin: 0;
+    margin-bottom: 2rem;
+  }
+
+  p {
+    margin: 0;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .col {
+    padding: 5px 0;
+
+    .boxed {
+      padding: 10px 15px;
+      margin-top: 0;
+      margin-bottom: 5px;
+      background: #efefef;
+
+      p:last-child {
+        padding-top: 5px;
+      }
+    }
+  }
+
+  .resources-list {
+    padding: 0 18px;
+
+    li {
+      padding: 2px;
+    }
+  }
+
+  .grid {
+    padding: 0;
+  }
+
+  .grid--table {
+    margin: 0;
+    margin: 10px 0 20px;
+  }
+
+  .grid--table .col.heading {
+    padding: 6px 0;
+  }
+
+  .grid--table .col {
+    padding: 6px 8px;
+  }
 }
