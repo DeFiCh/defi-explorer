@@ -6,6 +6,8 @@ import { valueOrDefault } from '../utils/check';
 import { StorageService } from '../services/storage';
 import { BlockStorage } from './block';
 import { TransactionStorage } from './transaction';
+import LruCache from '../LruCache';
+import { RICH_LIST_PAGE_SIZE } from '../constants/config';
 
 export type ICoin = {
   network: string;
@@ -63,12 +65,37 @@ class CoinModel extends BaseModel<ICoin> {
     );
   }
 
+  async prepareRichListRow(txIds) {
+    const data = {
+      txCount: '',
+      firstTxTime: '',
+      lastTxTime: ''
+    };
+    const tasks = [
+      TransactionStorage.getTransactionCount({ query: { txIds } }),
+      TransactionStorage.getFirstTransactionTime({
+        query: { txIds }
+      }),
+      TransactionStorage.getLastTransactionTime({
+        query: { txIds }
+      })
+    ];
+
+    const taskResult = await Promise.all(tasks);
+
+    Object.keys(data).forEach((item, ind) => {
+      data[item] = taskResult[ind];
+    });
+    return data;
+  }
+
   async getRichList(params: { query: any }, options: CollectionAggregationOptions = {}) {
-    const { pageNo, pageSize } = params.query;
+    const { pageNo } = params.query;
 
     const result: any = await this.collection
       .aggregate(
         [
+          { $match: { address: { $ne: 'false' } } },
           { $group: { _id: '$address', balance: { $sum: '$value' } } },
           {
             $project: {
@@ -78,8 +105,8 @@ class CoinModel extends BaseModel<ICoin> {
             }
           },
           { $sort: { balance: -1 } },
-          { $skip: pageSize * (pageNo - 1) },
-          { $limit: pageSize }
+          { $skip: RICH_LIST_PAGE_SIZE * (pageNo - 1) },
+          { $limit: RICH_LIST_PAGE_SIZE }
         ],
         options
       )
@@ -88,19 +115,13 @@ class CoinModel extends BaseModel<ICoin> {
     const updatedResult = await Promise.all(
       result.map(async curr => {
         const txIds = await this.getTransactionIdsForAddress({ query: { address: curr.address } });
-
-        curr.txCount = await TransactionStorage.getTransactionCount({ query: { txIds } });
-
-        curr.firstTxTime = await TransactionStorage.getFirstTransactionTime({
-          query: { txIds }
-        });
-        curr.lastTxTime = await TransactionStorage.getLastTransactionTime({
-          query: { txIds }
-        });
-
-        return curr;
+        const data = await this.prepareRichListRow(txIds);
+        return Object.assign({}, curr, data);
       })
     );
+
+    // add data to cache
+    LruCache.put(pageNo, updatedResult);
 
     return updatedResult;
   }

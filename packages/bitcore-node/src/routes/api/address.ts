@@ -1,6 +1,7 @@
 import express = require('express');
 const router = express.Router({ mergeParams: true });
 import { ChainStateProvider } from '../../providers/chain-state';
+import LruCache from '../../LruCache';
 
 router.get('/:address/txs', function(req, res) {
   let { address, chain, network } = req.params;
@@ -46,17 +47,13 @@ router.get('/:address/balance', async function(req, res) {
 
 router.get('/stats/rich-list', async function(req, res) {
   const { chain, network } = req.params;
-  let { pageno, pagesize } = req.query;
+  let { pageno } = req.query;
   try {
     if (pageno) {
       pageno = parseInt(pageno);
     }
 
-    if (pagesize) {
-      pagesize = parseInt(pagesize);
-    }
-
-    const result = await ChainStateProvider.getRichList({ chain, network, pageNo: pageno, pageSize: pagesize });
+    const result = LruCache.get(pageno) || await ChainStateProvider.getRichList({ chain, network, pageNo: pageno });
     return res.send(result || []);
   } catch (err) {
     return res.status(500).send(err);
