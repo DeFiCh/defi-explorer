@@ -13,8 +13,9 @@ export class LatestTransactionsComponent implements OnChanges {
   @Input()
   public refreshSeconds = 10;
   private timer: any;
-  private loading = true;
-  private transactions = [];
+  public loading = true;
+  public transactions = [];
+  public errorMessage;
 
   constructor(
     private httpClient: HttpClient,
@@ -51,6 +52,7 @@ export class LatestTransactionsComponent implements OnChanges {
       },
       err => {
         this.logger.error(err);
+        this.errorMessage = err.message;
         this.loading = false;
       }
     );
