@@ -44,7 +44,7 @@ export class AddressProvider {
 
   public getRichAddress(): Observable<ApiRichList[]> {
     return this.httpClient.get<ApiRichList[]>(
-      this.api.getUrl() + `/address/stats/rich-list?pageno=1&pagesize=100`
+      this.api.getUrl() + `/address/stats/rich-list?pageno=1&pagesize=200`
     );
   }
 }
