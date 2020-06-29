@@ -87,4 +87,10 @@ export class ApiProvider {
       selectedNetwork: network
     });
   }
+
+  public getStats(): Observable<any> {
+    return this.httpClient.get<any>(
+      this.getUrl() + '/stats'
+    )
+  }
 }
