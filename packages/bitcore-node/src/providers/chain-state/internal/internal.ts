@@ -1,5 +1,6 @@
 import { TransactionJSON } from '../../../types/Transaction';
 import through2 from 'through2';
+import axios from 'axios';
 
 import { MongoBound } from '../../../models/base';
 import { ObjectId } from 'mongodb';
@@ -17,6 +18,7 @@ import { StringifyJsonStream } from '../../../utils/stringifyJsonStream';
 import { StateStorage } from '../../../models/state';
 import { SpentHeightIndicators, CoinJSON } from '../../../types/Coin';
 import { Config } from '../../../services/config';
+import { STATS_URL } from '../../../constants/config';
 
 @LoggifyClass
 export class InternalStateProvider implements CSP.IChainStateService {
@@ -81,7 +83,7 @@ export class InternalStateProvider implements CSP.IChainStateService {
       pageNo
     };
 
-    const result = await CoinStorage.getRichList({query});
+    const result = await CoinStorage.getRichList({ query });
     return result;
   }
 
@@ -530,6 +532,20 @@ export class InternalStateProvider implements CSP.IChainStateService {
       network,
       results
     };
+  }
+
+  async getStats(params: CSP.GetStatsParams) {
+    const { network_type } = params;
+
+    const result = await axios({
+      method: 'get',
+      url: `${STATS_URL}?network=${network_type}`,
+      data: {
+        firstName: 'Finn',
+        lastName: 'Williams'
+      }
+    });
+    return result.data;
   }
 
   async getLocalTip({ chain, network }) {
