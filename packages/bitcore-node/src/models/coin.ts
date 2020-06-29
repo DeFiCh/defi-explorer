@@ -92,7 +92,7 @@ class CoinModel extends BaseModel<ICoin> {
   }
 
   async getRichList(params: { query: any }, options: CollectionAggregationOptions = {}) {
-    const { pageNo } = params.query;
+    const { pageNo, pageSize } = params.query;
     const cacheResult = richListCache.get(pageNo);
 
     // Have time stamp within the last 300 seconds, skip fetching again.
@@ -117,7 +117,7 @@ class CoinModel extends BaseModel<ICoin> {
             },
             { $sort: { balance: -1 } },
             { $skip: RICH_LIST_PAGE_SIZE * (pageNo - 1) },
-            { $limit: RICH_LIST_PAGE_SIZE }
+            { $limit: pageSize || RICH_LIST_PAGE_SIZE }
           ],
           options
         )
