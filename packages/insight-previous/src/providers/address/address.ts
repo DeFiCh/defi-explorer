@@ -42,9 +42,9 @@ export class AddressProvider {
     );
   }
 
-  public getRichAddress(): Observable<ApiRichList[]> {
+  public getRichAddress(pageSize:number): Observable<ApiRichList[]> {
     return this.httpClient.get<ApiRichList[]>(
-      this.api.getUrl() + `/address/stats/rich-list?pageno=1&pagesize=200`
+      this.api.getUrl() + `/address/stats/rich-list?pageno=1&pagesize=${pageSize}`
     );
   }
 }
