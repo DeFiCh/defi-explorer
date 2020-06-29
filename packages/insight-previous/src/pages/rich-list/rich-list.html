@@ -6,7 +6,7 @@
       <h2>Rich List</h2>
       <rich-listings #latestRichList></rich-listings>
     </div>
-    <ion-infinite-scroll (ionInfinite)="loadData($event)">
+    <ion-infinite-scroll threshold="25%" position="bottom" (ionInfinite)="loadData($event)">
       <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
       </ion-infinite-scroll-content>
     </ion-infinite-scroll>

@@ -50,19 +50,22 @@ export class RichListPage {
     });
   }
 
-  public loadData(event): void {
-    console.log('+++++++++++++++++++++++++++++++++++');
-    console.log('Stop ');
-    console.log('+++++++++++++++++++++++++++++++++++');
-    event.target.disable = true;
-
-    // this.pageSize += 200;
-    // this.richListings.reloadData(this.pageSize)
-    // if(this.richListings.addressLists.length < 600) {
-    //   event.target.complete();
-    // }
-    // else {
-    //   event.target.disable = true;
-    // }
+  public loadData(infiniteScrollEvent): void {
+    // infiniteScrollEvent.target.disable = true;
+    this.pageSize += 200;
+    this.richListings.reloadData(this.pageSize)
+    if(this.richListings.addressLists.length < 600) {
+      console.log(this.richListings.addressLists.length)
+      console.log('+++++++++++++++++++++++++++++++++++');
+      console.log('Complete ', infiniteScrollEvent.enabled);
+      console.log('+++++++++++++++++++++++++++++++++++');
+      infiniteScrollEvent.complete();
+    }
+    else {
+      console.log('+++++++++++++++++++++++++++++++++++');
+      console.log('Stop ', infiniteScrollEvent.enabled);
+      console.log('+++++++++++++++++++++++++++++++++++');
+      infiniteScrollEvent.enable(false);
+    }
   }
 }
