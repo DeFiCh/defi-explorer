@@ -2,8 +2,15 @@ import { Request, Response } from 'express';
 import { ChainStateProvider } from '../../providers/chain-state';
 const router = require('express').Router({ mergeParams: true });
 
-router.get('/', async function(_: Request, res: Response) {
-  return res.send(404);
+router.get('/', async function(req: Request, res: Response) {
+  try {
+    const { chain, network } = req.params;
+    const { network_type } = req.query;
+    const result = await ChainStateProvider.getStats({ chain, network, network_type });
+    return res.send(result);
+  } catch (err) {
+    return res.status(500).send(err);
+  }
 });
 
 let cacheThroughTruncatedDate;

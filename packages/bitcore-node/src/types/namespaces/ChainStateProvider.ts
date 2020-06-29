@@ -36,6 +36,10 @@ export declare namespace CSP {
     pageNo: number;
   }
 
+  export type GetStatsParams = ChainNetwork & {
+    network_type: string;
+  }
+
   export type GetBlockParams = ChainNetwork & {
     blockId?: string;
     sinceBlock?: number | string;
@@ -149,6 +153,7 @@ export declare namespace CSP {
     streamTransactions(params: StreamTransactionsParams): any;
     getAuthhead(params: StreamTransactionParams): Promise<AuthheadJSON | undefined>;
     getDailyTransactions(params: { chain: string; network: string }): Promise<DailyTransactionsJSON>;
+    getStats(params: GetStatsParams): Promise<any>;
     getTransaction(params: StreamTransactionParams): Promise<TransactionJSON | string | undefined>;
     streamWalletAddresses(params: StreamWalletAddressesParams): any;
     walletCheck(params: WalletCheckParams): any;
