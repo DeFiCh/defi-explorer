@@ -13,6 +13,8 @@ import { PriceProvider } from '../providers/price/price';
 import { RedirProvider } from '../providers/redir/redir';
 import { SearchProvider } from '../providers/search/search';
 import { TxsProvider } from '../providers/transactions/transactions';
+import { WebsocketSetup } from '../providers/websocket/websocket';
+import { WebsocketProvider } from '../providers/websocket/websocketProvider';
 import { InsightApp } from './app.component';
 
 @NgModule({
@@ -41,6 +43,8 @@ import { InsightApp } from './app.component';
     Logger,
     AddressProvider,
     Title,
+    WebsocketProvider,
+    WebsocketSetup,
   ]
 })
 export class AppModule {
