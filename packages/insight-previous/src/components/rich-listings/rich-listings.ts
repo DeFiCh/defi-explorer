@@ -11,7 +11,7 @@ import { RedirProvider } from '../../providers/redir/redir';
   selector: 'rich-listings',
   templateUrl: 'rich-listings.html'
 })
-export class RichListingsComponent implements OnDestroy {
+export class RichListingsComponent implements OnInit, OnDestroy {
   @Input()
   public showTimeAs: string;
   public loading = true;
@@ -31,11 +31,13 @@ export class RichListingsComponent implements OnDestroy {
     private logger: Logger
   ) {}
 
-  // public ngOnInit(): void {
-  //   this.onInitBase();
-  // }
+  public ngOnInit(): void {
+    this.onInitBase(200);
+  }
 
-  private onInitBase(pageSize: number) {
+  private onInitBase(pageSize) {
+    console.log('ON INITFUNCTION')
+    console.log({pageSize})
     this.loadAddressLists(pageSize);
     const seconds = 15;
     this.ngZone.runOutsideAngular(() => {
@@ -48,8 +50,10 @@ export class RichListingsComponent implements OnDestroy {
   }
 
   private loadAddressLists(pageSize: number): void {
+    console.log('LoadAddress')
     this.subscriber = this.addressProvider.getRichAddress(pageSize).subscribe(
       response => {
+        console.log(response)
         this.addressLists = response;
         this.loading = false;
       },
@@ -63,7 +67,8 @@ export class RichListingsComponent implements OnDestroy {
     );
   }
 
-  public reloadData(pageSize: number = 200) {
+  public reloadData(pageSize: number) {
+    console.log({pageSize})
     this.subscriber.unsubscribe();
     this.addressLists = [];
     this.onInitBase(pageSize)
