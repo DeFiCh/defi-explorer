@@ -20,6 +20,7 @@ export class RichListPage {
   public chain: string;
   private chainNetwork: ChainNetwork;
   public network: string;
+  public pageSize = 200;
   constructor(
     public nav: Nav,
     public navParams: NavParams,
@@ -47,5 +48,21 @@ export class RichListPage {
       chain: this.chain,
       network: this.network
     });
+  }
+
+  public loadData(event): void {
+    console.log('+++++++++++++++++++++++++++++++++++');
+    console.log('Stop ');
+    console.log('+++++++++++++++++++++++++++++++++++');
+    event.target.disable = true;
+
+    // this.pageSize += 200;
+    // this.richListings.reloadData(this.pageSize)
+    // if(this.richListings.addressLists.length < 600) {
+    //   event.target.complete();
+    // }
+    // else {
+    //   event.target.disable = true;
+    // }
   }
 }
