@@ -18,26 +18,38 @@ export class RichListingsComponent implements OnInit, OnDestroy {
   public addressLists: ApiRichList[] = [];
   public subscriber: Subscription;
   public errorMessage: string;
+  public prevPageNum: number;
+  public isMounted = false;
 
-  private reloadInterval: any;
+  public reloadInterval: any;
 
   constructor(
     public currencyProvider: CurrencyProvider,
     public defaults: DefaultProvider,
     public redirProvider: RedirProvider,
-    private addressProvider: AddressProvider,
-    private apiProvider: ApiProvider,
-    private ngZone: NgZone,
-    private logger: Logger
+    public addressProvider: AddressProvider,
+    public apiProvider: ApiProvider,
+    public ngZone: NgZone,
+    public logger: Logger
   ) {}
 
   public ngOnInit(): void {
-    this.onInitBase(200);
+    this.onInitBase();
   }
 
-  private onInitBase(pageSize) {
-    console.log('ON INITFUNCTION')
-    console.log({pageSize})
+  // public onInitBase(pageNum: number, pageSize: number): void {
+  //   this.loadAddressLists(pageNum, pageSize);
+  //   const seconds = 15;
+  //   this.ngZone.runOutsideAngular(() => {
+  //     this.reloadInterval = setInterval(() => {
+  //       this.ngZone.run(() => {
+  //         this.loadAddressLists.call(this, pageNum, pageSize);
+  //       });
+  //     }, 1000 * seconds);
+  //   });
+  // }
+
+  public onInitBase(pageSize: number = 200): void {
     this.loadAddressLists(pageSize);
     const seconds = 15;
     this.ngZone.runOutsideAngular(() => {
@@ -49,13 +61,40 @@ export class RichListingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  private loadAddressLists(pageSize: number): void {
-    console.log('LoadAddress')
+  // public loadAddressLists(pageNum: number, pageSize: number): void {
+  //   this.subscriber = this.addressProvider
+  //     .getRichAddress(pageNum, pageSize)
+  //     .subscribe(
+  //       response => {
+  //         let temp = this.addressLists;
+  //         if (this.prevPageNum === pageNum) {
+  //           temp = temp.slice(0, temp.length - 200);
+  //         }
+  //         if (Array.isArray(response) && response.length) {
+  //           this.addressLists = temp.concat(response);
+  //         }
+  //         this.loading = false;
+  //         this.errorMessage = null;
+  //         this.prevPageNum = pageNum;
+  //       },
+  //       err => {
+  //         this.subscriber.unsubscribe();
+  //         clearInterval(this.reloadInterval);
+  //         this.logger.error(err.message);
+  //         this.errorMessage = err.message;
+  //         this.loading = false;
+  //       }
+  //     );
+  // }
+  public loadAddressLists(pageSize: number): void {
     this.subscriber = this.addressProvider.getRichAddress(pageSize).subscribe(
       response => {
-        console.log(response)
         this.addressLists = response;
         this.loading = false;
+        if (!this.isMounted) {
+          this.isMounted = true;
+        }
+        this.errorMessage = null;
       },
       err => {
         this.subscriber.unsubscribe();
@@ -66,12 +105,25 @@ export class RichListingsComponent implements OnInit, OnDestroy {
       }
     );
   }
-
+  // public reloadData(pageNum: number, pageSize: number) {
+  //   this.subscriber.unsubscribe();
+  //   this.addressLists = [];
+  //   this.onInitBase(pageNum, pageSize);
+  // }
   public reloadData(pageSize: number) {
-    console.log({pageSize})
     this.subscriber.unsubscribe();
     this.addressLists = [];
-    this.onInitBase(pageSize)
+    this.onInitBase(pageSize);
+  }
+  // public loadMore(pageNum: number, pageSize: number) {
+  //   this.subscriber.unsubscribe();
+  //   clearInterval(this.reloadInterval);
+  //   this.onInitBase(pageNum, pageSize);
+  // }
+  public loadMore(pageSize: number) {
+    this.subscriber.unsubscribe();
+    clearInterval(this.reloadInterval);
+    this.onInitBase(pageSize);
   }
 
   public ngOnDestroy(): void {
