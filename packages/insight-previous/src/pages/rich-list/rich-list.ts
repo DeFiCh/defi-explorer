@@ -15,12 +15,14 @@ import { PriceProvider } from '../../providers/price/price';
   templateUrl: 'rich-list.html'
 })
 export class RichListPage {
-  @ViewChild('richListings')
-  public richListings: RichListingsComponent;
+  @ViewChild('latestRichList')
+  public latestRichList: RichListingsComponent;
   public chain: string;
   private chainNetwork: ChainNetwork;
   public network: string;
+  public pageNum = 1;
   public pageSize = 200;
+  public count = 1;
   constructor(
     public nav: Nav,
     public navParams: NavParams,
@@ -50,22 +52,14 @@ export class RichListPage {
     });
   }
 
-  public loadData(infiniteScrollEvent): void {
-    // infiniteScrollEvent.target.disable = true;
+  doInfinite(infiniteScroll) {
+    const { loadMore, addressLists, errorMessage } = this.latestRichList;
     this.pageSize += 200;
-    this.richListings.reloadData(this.pageSize)
-    if(this.richListings.addressLists.length < 600) {
-      console.log(this.richListings.addressLists.length)
-      console.log('+++++++++++++++++++++++++++++++++++');
-      console.log('Complete ', infiniteScrollEvent.enabled);
-      console.log('+++++++++++++++++++++++++++++++++++');
-      infiniteScrollEvent.complete();
-    }
-    else {
-      console.log('+++++++++++++++++++++++++++++++++++');
-      console.log('Stop ', infiniteScrollEvent.enabled);
-      console.log('+++++++++++++++++++++++++++++++++++');
-      infiniteScrollEvent.enable(false);
+    if (addressLists.length < 1000) {
+      loadMore.call(this.latestRichList, this.pageSize);
+      infiniteScroll.complete();
+    } else {
+      infiniteScroll.enable(false);
     }
   }
 }
