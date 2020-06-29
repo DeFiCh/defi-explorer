@@ -540,10 +540,6 @@ export class InternalStateProvider implements CSP.IChainStateService {
     const result = await axios({
       method: 'get',
       url: `${STATS_URL}?network=${network}`,
-      data: {
-        firstName: 'Finn',
-        lastName: 'Williams'
-      }
     });
     return result.data;
   }
