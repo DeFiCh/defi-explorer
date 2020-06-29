@@ -34,27 +34,27 @@ export declare namespace CSP {
 
   export type GetRichListParams = ChainNetwork & {
     pageNo: number;
-  }
+  };
 
-  export type GetStatsParams = ChainNetwork & {
-    network_type: string;
-  }
+  export type GetStatsParams = ChainNetwork;
 
   export type GetBlockParams = ChainNetwork & {
     blockId?: string;
     sinceBlock?: number | string;
     anchorsOnly?: boolean;
-    args?: Partial<{
-      startDate: Date;
-      endDate: Date;
-      date: Date;
-    } & StreamingFindOptions<IBlock>>;
+    args?: Partial<
+      {
+        startDate: Date;
+        endDate: Date;
+        date: Date;
+      } & StreamingFindOptions<IBlock>
+    >;
   };
   export type StreamBlocksParams = ChainNetwork & {
     blockId?: string;
     sinceBlock: number | string;
     anchorsOnly: boolean;
-    args?: Partial<{ startDate: Date; endDate: Date; date: Date; } & StreamingFindOptions<IBlock>>;
+    args?: Partial<{ startDate: Date; endDate: Date; date: Date } & StreamingFindOptions<IBlock>>;
     req: Request;
     res: Response;
   };

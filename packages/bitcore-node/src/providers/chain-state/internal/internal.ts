@@ -535,11 +535,11 @@ export class InternalStateProvider implements CSP.IChainStateService {
   }
 
   async getStats(params: CSP.GetStatsParams) {
-    const { network_type } = params;
+    const { network } = params;
 
     const result = await axios({
       method: 'get',
-      url: `${STATS_URL}?network=${network_type}`,
+      url: `${STATS_URL}?network=${network}`,
       data: {
         firstName: 'Finn',
         lastName: 'Williams'
