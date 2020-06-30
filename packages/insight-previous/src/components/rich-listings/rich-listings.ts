@@ -6,6 +6,7 @@ import { CurrencyProvider } from '../../providers/currency/currency';
 import { DefaultProvider } from '../../providers/default/default';
 import { Logger } from '../../providers/logger/logger';
 import { RedirProvider } from '../../providers/redir/redir';
+import { setIntervalSynchronous } from '../../utils/utility';
 
 @Component({
   selector: 'rich-listings',
@@ -16,12 +17,12 @@ export class RichListingsComponent implements OnInit, OnDestroy {
   public showTimeAs: string;
   public loading = true;
   public addressLists: ApiRichList[] = [];
-  public subscriber: Subscription;
+  public subscriber: Subscription[] = [];
   public errorMessage: string;
-  public prevPageNum: number;
   public isMounted = false;
+  public total: number;
 
-  public reloadInterval: any;
+  public reloadInterval: any[] = [];
 
   constructor(
     public currencyProvider: CurrencyProvider,
@@ -37,97 +38,77 @@ export class RichListingsComponent implements OnInit, OnDestroy {
     this.onInitBase();
   }
 
-  // public onInitBase(pageNum: number, pageSize: number): void {
-  //   this.loadAddressLists(pageNum, pageSize);
-  //   const seconds = 15;
-  //   this.ngZone.runOutsideAngular(() => {
-  //     this.reloadInterval = setInterval(() => {
-  //       this.ngZone.run(() => {
-  //         this.loadAddressLists.call(this, pageNum, pageSize);
-  //       });
-  //     }, 1000 * seconds);
-  //   });
-  // }
-
-  public onInitBase(pageSize: number = 200): void {
-    this.loadAddressLists(pageSize);
+  public onInitBase(pageNum: number = 1, pageSize: number = 200): void {
+    this.loadAddressLists(pageNum, pageSize);
     const seconds = 15;
     this.ngZone.runOutsideAngular(() => {
-      this.reloadInterval = setInterval(() => {
-        this.ngZone.run(() => {
-          this.loadAddressLists.call(this, pageSize);
-        });
-      }, 1000 * seconds);
+      if (!this.reloadInterval[pageNum]) {
+        this.reloadInterval[pageNum] = setIntervalSynchronous(() => {
+          this.ngZone.run(() => {
+            this.loadAddressLists.call(this, pageNum, pageSize);
+          });
+        }, 5000 * seconds);
+      }
     });
   }
 
-  // public loadAddressLists(pageNum: number, pageSize: number): void {
-  //   this.subscriber = this.addressProvider
-  //     .getRichAddress(pageNum, pageSize)
-  //     .subscribe(
-  //       response => {
-  //         let temp = this.addressLists;
-  //         if (this.prevPageNum === pageNum) {
-  //           temp = temp.slice(0, temp.length - 200);
-  //         }
-  //         if (Array.isArray(response) && response.length) {
-  //           this.addressLists = temp.concat(response);
-  //         }
-  //         this.loading = false;
-  //         this.errorMessage = null;
-  //         this.prevPageNum = pageNum;
-  //       },
-  //       err => {
-  //         this.subscriber.unsubscribe();
-  //         clearInterval(this.reloadInterval);
-  //         this.logger.error(err.message);
-  //         this.errorMessage = err.message;
-  //         this.loading = false;
-  //       }
-  //     );
-  // }
-  public loadAddressLists(pageSize: number): void {
-    this.subscriber = this.addressProvider.getRichAddress(pageSize).subscribe(
-      response => {
-        this.addressLists = response;
-        this.loading = false;
-        if (!this.isMounted) {
-          this.isMounted = true;
-        }
-        this.errorMessage = null;
-      },
-      err => {
-        this.subscriber.unsubscribe();
-        clearInterval(this.reloadInterval);
-        this.logger.error(err.message);
-        this.errorMessage = err.message;
-        this.loading = false;
+  public loadAddressLists(pageNum: number, pageSize: number): void {
+    const toIndex = (pageNum - 1) * pageSize;
+
+    const appendData = response => {
+      const { data, total } = response;
+      if (Array.isArray(data) && data.length) {
+        this.addressLists = this.addressLists.concat(data);
       }
-    );
+      this.loading = false;
+      this.total = total;
+    };
+
+    const pollingData = response => {
+      const { data, total } = response;
+      const temp = [].concat(this.addressLists);
+      for (let index = toIndex; index < data.length; index++) {
+        temp[index] = data[index % pageSize];
+      }
+
+      this.addressLists = temp;
+      this.loading = false;
+      this.total = total;
+    };
+
+    let responseFunc = pollingData;
+
+    if (!this.subscriber[pageNum]) {
+      responseFunc = appendData;
+    }
+
+    this.subscriber[pageNum] = this.addressProvider
+      .getRichAddress(pageNum, pageSize)
+      .subscribe(responseFunc, err => {
+        this.subscriber[pageNum].unsubscribe();
+        this.reloadInterval[pageNum]();
+        this.logger.error(err.message);
+        this.loading = false;
+      });
   }
-  // public reloadData(pageNum: number, pageSize: number) {
-  //   this.subscriber.unsubscribe();
-  //   this.addressLists = [];
-  //   this.onInitBase(pageNum, pageSize);
-  // }
-  public reloadData(pageSize: number) {
-    this.subscriber.unsubscribe();
+
+  public unsubscribeAll() {
+    this.subscriber.map(item => !!item && item.unsubscribe());
+    this.reloadInterval.map(item => !!item && item());
     this.addressLists = [];
-    this.onInitBase(pageSize);
   }
-  // public loadMore(pageNum: number, pageSize: number) {
-  //   this.subscriber.unsubscribe();
-  //   clearInterval(this.reloadInterval);
-  //   this.onInitBase(pageNum, pageSize);
-  // }
-  public loadMore(pageSize: number) {
-    this.subscriber.unsubscribe();
-    clearInterval(this.reloadInterval);
-    this.onInitBase(pageSize);
+
+  public reloadData() {
+    this.unsubscribeAll();
+    this.onInitBase();
+  }
+
+  public loadMore(pageNum: number, pageSize: number) {
+    this.onInitBase(pageNum, pageSize);
   }
 
   public ngOnDestroy(): void {
-    clearInterval(this.reloadInterval);
+    this.unsubscribeAll();
   }
 
   public goToAddress(addrStr: string): void {
