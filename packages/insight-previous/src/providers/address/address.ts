@@ -51,10 +51,4 @@ export class AddressProvider {
         `/address/stats/rich-list?pageno=${pageNum}&pagesize=${pageSize}`
     );
   }
-  // public getRichAddress(pageSize: number): Observable<ApiRichList[]> {
-  //   return this.httpClient.get<ApiRichList[]>(
-  //     this.api.getUrl() +
-  //       `/address/stats/rich-list?pageno=1&pagesize=${pageSize}`
-  //   );
-  // }
 }
