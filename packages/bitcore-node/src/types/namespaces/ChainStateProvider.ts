@@ -34,9 +34,8 @@ export declare namespace CSP {
 
   export type GetRichListParams = ChainNetwork & {
     pageNo: number;
+    pageSize: number;
   };
-
-  export type GetStatsParams = ChainNetwork;
 
   export type GetBlockParams = ChainNetwork & {
     blockId?: string;

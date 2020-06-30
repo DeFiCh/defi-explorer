@@ -47,16 +47,17 @@ router.get('/:address/balance', async function(req, res) {
 
 router.get('/stats/rich-list', async function(req, res) {
   const { chain, network } = req.params;
-  let { pageno } = req.query;
+  let { pageno, pagesize } = req.query;
   try {
     if (pageno) {
       pageno = parseInt(pageno);
+      pagesize = parseInt(pagesize);
     }
 
     queue.push(
       {
         methodName: ChainStateProvider.getRichList.bind(ChainStateProvider),
-        params: [{ chain, network, pageNo: pageno }]
+        params: [{ chain, network, pageNo: pageno, pageSize: pagesize }]
       },
       (err, result) => {
         if (err) {
