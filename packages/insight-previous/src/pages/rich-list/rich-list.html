@@ -7,7 +7,7 @@
       <rich-listings #latestRichList></rich-listings>
     </div>
     <ion-infinite-scroll
-      threshold="15%"
+      threshold="10%"
       position="bottom"
       (ionInfinite)="doInfinite($event)"
       *ngIf="enableInfiniteScroller"
