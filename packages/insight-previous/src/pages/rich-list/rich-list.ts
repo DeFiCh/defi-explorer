@@ -5,6 +5,8 @@ import { ApiProvider, ChainNetwork } from '../../providers/api/api';
 import { CurrencyProvider } from '../../providers/currency/currency';
 import { PriceProvider } from '../../providers/price/price';
 
+const thresholdRichListElement = 1000;
+
 @Injectable()
 @IonicPage({
   name: 'rich-list',
@@ -22,7 +24,7 @@ export class RichListPage {
   public network: string;
   public pageNum = 1;
   public pageSize = 200;
-  public count = 1;
+  public enableInfiniteScroller = true;
   constructor(
     public nav: Nav,
     public navParams: NavParams,
@@ -53,13 +55,15 @@ export class RichListPage {
   }
 
   doInfinite(infiniteScroll) {
-    const { loadMore, addressLists, errorMessage } = this.latestRichList;
-    this.pageSize += 200;
-    if (addressLists.length < 1000) {
-      loadMore.call(this.latestRichList, this.pageSize);
+    const { loadMore, addressLists, total } = this.latestRichList;
+    this.pageNum = Math.floor(addressLists.length / this.pageSize) + 1;
+    const threshold = Math.min(total, thresholdRichListElement);
+    if (addressLists.length < threshold) {
+      loadMore.call(this.latestRichList, this.pageNum, this.pageSize);
       infiniteScroll.complete();
     } else {
       infiniteScroll.enable(false);
+      this.enableInfiniteScroller = false;
     }
   }
 }
