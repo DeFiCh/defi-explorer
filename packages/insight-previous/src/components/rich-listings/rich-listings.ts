@@ -12,7 +12,7 @@ import { setIntervalSynchronous } from '../../utils/utility';
   selector: 'rich-listings',
   templateUrl: 'rich-listings.html'
 })
-export class RichListingsComponent implements OnInit, OnDestroy {
+export class RichListingsComponent implements OnDestroy {
   @Input()
   public showTimeAs: string;
   public loading = true;
@@ -33,10 +33,6 @@ export class RichListingsComponent implements OnInit, OnDestroy {
     public ngZone: NgZone,
     public logger: Logger
   ) {}
-
-  public ngOnInit(): void {
-    this.onInitBase();
-  }
 
   public onInitBase(pageNum: number = 1, pageSize: number = 200): void {
     this.loadAddressLists(pageNum, pageSize);

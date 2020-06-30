@@ -1,4 +1,9 @@
-import { Component, Injectable, ViewChild } from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  Component,
+  ViewChild
+} from '@angular/core';
 import { Events, IonicPage, Nav, NavParams } from 'ionic-angular';
 import { RichListingsComponent } from '../../components/rich-listings/rich-listings';
 import { ApiProvider, ChainNetwork } from '../../providers/api/api';
@@ -7,7 +12,6 @@ import { PriceProvider } from '../../providers/price/price';
 
 const thresholdRichListElement = 1000;
 
-@Injectable()
 @IonicPage({
   name: 'rich-list',
   segment: ':chain/:network/rich-list'
@@ -16,7 +20,7 @@ const thresholdRichListElement = 1000;
   selector: 'page-rich-list',
   templateUrl: 'rich-list.html'
 })
-export class RichListPage {
+export class RichListPage implements AfterViewInit, AfterViewChecked {
   @ViewChild('latestRichList')
   public latestRichList: RichListingsComponent;
   public chain: string;
@@ -24,7 +28,7 @@ export class RichListPage {
   public network: string;
   public pageNum = 1;
   public pageSize = 200;
-  public enableInfiniteScroller = true;
+  public enableInfiniteScroller = false;
   constructor(
     public nav: Nav,
     public navParams: NavParams,
@@ -45,6 +49,16 @@ export class RichListPage {
     this.apiProvider.changeNetwork(this.chainNetwork);
     this.currencyProvider.setCurrency();
     this.priceProvider.setCurrency();
+  }
+
+  public ngAfterViewInit() {
+    const { onInitBase } = this.latestRichList;
+    onInitBase.call(this.latestRichList);
+  }
+
+  public ngAfterViewChecked() {
+    const { addressLists } = this.latestRichList;
+    this.enableInfiniteScroller = addressLists.length > 0;
   }
 
   public openPage(page: string): void {
