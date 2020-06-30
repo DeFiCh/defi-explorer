@@ -10,6 +10,7 @@
       threshold="15%"
       position="bottom"
       (ionInfinite)="doInfinite($event)"
+      *ngIf="enableInfiniteScroller"
     >
       <ion-infinite-scroll-content
         text-center
