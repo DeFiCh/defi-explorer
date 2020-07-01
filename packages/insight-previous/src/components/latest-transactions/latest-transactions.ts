@@ -4,6 +4,7 @@ import { CurrencyProvider } from '../../providers/currency/currency';
 import { Logger } from '../../providers/logger/logger';
 import { RedirProvider } from '../../providers/redir/redir';
 import { WebsocketProvider } from '../../providers/websocket/websocketProvider';
+const thresholdLimit = 10;
 
 @Component({
   selector: 'latest-transactions',
@@ -14,15 +15,16 @@ export class LatestTransactionsComponent implements OnInit {
   public refreshSeconds = 10;
   public loading = true;
   public transactions = [];
+  public transactionsLatest = [];
   public errorMessage;
 
   constructor(
     private apiProvider: ApiProvider,
-    public currency: CurrencyProvider,
+    public currencyProvider: CurrencyProvider,
     public redirProvider: RedirProvider,
     private logger: Logger,
     private websocketProvider: WebsocketProvider
-  ) { }
+  ) {}
 
   public ngOnInit(): void {
     this.loadTransactions();
@@ -30,9 +32,16 @@ export class LatestTransactionsComponent implements OnInit {
 
   private loadTransactions(): void {
     this.websocketProvider.messages.subscribe(
-      (data: any) => {
-        this.transactions = JSON.parse(data._body);
-        this.loading = false;
+      (response: any) => {
+        if (response.type === 'tx') {
+          if (this.transactions.length >= thresholdLimit) {
+            this.transactions.shift();
+          }
+          this.transactions.push(JSON.parse(response.data));
+          const temp = [...this.transactions];
+          this.transactionsLatest = temp.reverse();
+          this.loading = false;
+        }
       },
       err => {
         this.logger.error(err);

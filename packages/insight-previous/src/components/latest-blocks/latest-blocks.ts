@@ -54,22 +54,24 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   }
 
   private loadBlocks(): void {
-    this.subscriber = this.blocksProvider.getBlocks(this.numBlocks, this.showAnchoredBlocksButton).subscribe(
-      response => {
-        const blocks = response.map(block =>
-          this.blocksProvider.toAppBlock(block)
-        );
-        this.blocks = blocks;
-        this.loading = false;
-      },
-      err => {
-        this.subscriber.unsubscribe();
-        clearInterval(this.reloadInterval);
-        this.logger.error(err.message);
-        this.errorMessage = err.message;
-        this.loading = false;
-      }
-    );
+    this.subscriber = this.blocksProvider
+      .getBlocks(this.numBlocks, this.showAnchoredBlocksButton)
+      .subscribe(
+        response => {
+          const blocks = response.map(block =>
+            this.blocksProvider.toAppBlock(block)
+          );
+          this.blocks = blocks;
+          this.loading = false;
+        },
+        err => {
+          this.subscriber.unsubscribe();
+          clearInterval(this.reloadInterval);
+          this.logger.error(err.message);
+          this.errorMessage = err.message;
+          this.loading = false;
+        }
+      );
   }
 
   public loadMoreBlocks(infiniteScroll) {
@@ -77,21 +79,23 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
     const since: number =
       this.blocks.length > 0 ? this.blocks[this.blocks.length - 1].height : 0;
 
-    return this.blocksProvider.pageBlocks(since, this.numBlocks, this.showAnchoredBlocksButton).subscribe(
-      response => {
-        const blocks = response.map(block =>
-          this.blocksProvider.toAppBlock(block)
-        );
-        this.blocks = this.blocks.concat(blocks);
-        this.loading = false;
-        infiniteScroll.complete();
-      },
-      err => {
-        this.logger.error(err.message);
-        this.errorMessage = err.message;
-        this.loading = false;
-      }
-    );
+    return this.blocksProvider
+      .pageBlocks(since, this.numBlocks, this.showAnchoredBlocksButton)
+      .subscribe(
+        response => {
+          const blocks = response.map(block =>
+            this.blocksProvider.toAppBlock(block)
+          );
+          this.blocks = this.blocks.concat(blocks);
+          this.loading = false;
+          infiniteScroll.complete();
+        },
+        err => {
+          this.logger.error(err.message);
+          this.errorMessage = err.message;
+          this.loading = false;
+        }
+      );
   }
 
   public goToBlock(blockHash: string): void {
@@ -130,7 +134,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   public goToAnchoredBlocks(): void {
     this.redirProvider.redir('anchored-blocks', {
       chain: this.apiProvider.networkSettings.value.selectedNetwork.chain,
-      network: this.apiProvider.networkSettings.value.selectedNetwork.network,
+      network: this.apiProvider.networkSettings.value.selectedNetwork.network
     });
   }
 }
