@@ -1,10 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ApiProvider } from '../../providers/api/api';
 import { CurrencyProvider } from '../../providers/currency/currency';
+import { DefaultProvider } from '../../providers/default/default';
 import { Logger } from '../../providers/logger/logger';
 import { RedirProvider } from '../../providers/redir/redir';
 import { WebsocketProvider } from '../../providers/websocket/websocketProvider';
-const thresholdLimit = 10;
 
 @Component({
   selector: 'latest-transactions',
@@ -15,14 +15,21 @@ export class LatestTransactionsComponent implements OnInit {
   public transactions = [];
   public transactionsLatest = [];
   public errorMessage;
+  public rowLimit;
 
   constructor(
     private apiProvider: ApiProvider,
     public currencyProvider: CurrencyProvider,
     public redirProvider: RedirProvider,
     private logger: Logger,
-    private websocketProvider: WebsocketProvider
-  ) {}
+    private websocketProvider: WebsocketProvider,
+    public defaultProvider: DefaultProvider
+  ) {
+    this.rowLimit = parseInt(
+      defaultProvider.getDefault('%NUM_TRX_BLOCKS%'),
+      10
+    );
+  }
 
   public ngOnInit(): void {
     this.loadTransactions();
@@ -32,7 +39,7 @@ export class LatestTransactionsComponent implements OnInit {
     this.websocketProvider.messages.subscribe(
       (response: any) => {
         if (response.type === 'tx') {
-          if (this.transactions.length >= thresholdLimit) {
+          if (this.transactions.length >= this.rowLimit) {
             this.transactions.shift();
           }
           this.transactions.push(JSON.parse(response.data));
