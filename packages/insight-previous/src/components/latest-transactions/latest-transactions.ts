@@ -11,8 +11,6 @@ const thresholdLimit = 10;
   templateUrl: 'latest-transactions.html'
 })
 export class LatestTransactionsComponent implements OnInit {
-  @Input()
-  public refreshSeconds = 10;
   public loading = true;
   public transactions = [];
   public transactionsLatest = [];
