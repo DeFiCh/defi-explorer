@@ -6,9 +6,13 @@
       <ion-row>
         <ion-col col-md-8>
           <h2>Latest Blocks</h2>
-          <latest-blocks [showTimeAs]="'age'" [showAllBlocksButton]="true" #latestBlocks></latest-blocks>
-          <!-- <h2>Latest Transactions</h2>
-          <latest-transactions [refreshSeconds]="10" #latestTransactions></latest-transactions> -->
+          <latest-blocks
+            [showTimeAs]="'age'"
+            [showAllBlocksButton]="true"
+            #latestBlocks
+          ></latest-blocks>
+          <h2>Latest Transactions</h2>
+          <latest-transactions #latestTransactions></latest-transactions>
         </ion-col>
         <ion-col col-md-4>
           <about></about>
