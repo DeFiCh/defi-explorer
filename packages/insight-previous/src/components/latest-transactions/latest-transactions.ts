@@ -1,54 +1,52 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, Input, NgZone, OnChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ApiProvider } from '../../providers/api/api';
 import { CurrencyProvider } from '../../providers/currency/currency';
+import { DefaultProvider } from '../../providers/default/default';
 import { Logger } from '../../providers/logger/logger';
 import { RedirProvider } from '../../providers/redir/redir';
+import { WebsocketProvider } from '../../providers/websocket/websocketProvider';
 
 @Component({
   selector: 'latest-transactions',
   templateUrl: 'latest-transactions.html'
 })
-export class LatestTransactionsComponent implements OnChanges {
-  @Input()
-  public refreshSeconds = 10;
-  private timer: any;
+export class LatestTransactionsComponent implements OnInit {
   public loading = true;
   public transactions = [];
+  public transactionsLatest = [];
   public errorMessage;
+  public rowLimit;
 
   constructor(
-    private httpClient: HttpClient,
     private apiProvider: ApiProvider,
-    public currency: CurrencyProvider,
-    private ngZone: NgZone,
+    public currencyProvider: CurrencyProvider,
     public redirProvider: RedirProvider,
-    private logger: Logger
+    private logger: Logger,
+    private websocketProvider: WebsocketProvider,
+    public defaultProvider: DefaultProvider
   ) {
+    this.rowLimit = parseInt(
+      defaultProvider.getDefault('%NUM_TRX_BLOCKS%'),
+      10
+    );
+  }
+
+  public ngOnInit(): void {
     this.loadTransactions();
   }
 
-  public ngOnChanges(): void {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-
-    this.ngZone.runOutsideAngular(() => {
-      this.timer = setInterval(() => {
-        this.ngZone.run(() => {
-          this.loadTransactions.call(this);
-        });
-      }, 1000 * this.refreshSeconds);
-    });
-  }
-
   private loadTransactions(): void {
-    const url: string = this.apiProvider.getUrl() + 'txs';
-
-    this.httpClient.get(url).subscribe(
-      (data: any) => {
-        this.transactions = JSON.parse(data._body);
-        this.loading = false;
+    this.websocketProvider.messages.subscribe(
+      (response: any) => {
+        if (response.type === 'tx') {
+          if (this.transactions.length >= this.rowLimit) {
+            this.transactions.shift();
+          }
+          this.transactions.push(JSON.parse(response.data));
+          const temp = [...this.transactions];
+          this.transactionsLatest = temp.reverse();
+          this.loading = false;
+        }
       },
       err => {
         this.logger.error(err);

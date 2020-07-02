@@ -3,23 +3,22 @@
   <loader *ngIf="loading" [type]="'grid'"></loader>
   <div *ngIf="!loading && !errorMessage">
     <ion-grid class="grid--table">
-
       <ion-row>
         <ion-col><b>Hash</b></ion-col>
         <ion-col text-right><b>Value Out</b></ion-col>
       </ion-row>
 
-      <ion-row *ngFor="let tx of transactions">
+      <ion-row *ngFor="let tx of transactionsLatest">
         <ion-col col-9>
           <div class="ellipsis">
             <a (click)="goToTx(tx.txid)">{{ tx.txid }}</a>
           </div>
         </ion-col>
         <ion-col col-3 text-right>
-          {{ currencyProvider.getConversion(tx.valueOut) }}
+          {{ currencyProvider.getConvertedNumber(tx.value) | number }} {{
+          currencyProvider.currencySymbol }}
         </ion-col>
       </ion-row>
-
     </ion-grid>
   </div>
 </div>
