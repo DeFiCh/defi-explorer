@@ -1,7 +1,6 @@
 <error [message]="errorMessage" *ngIf="errorMessage"></error>
 <div *ngIf="!errorMessage">
   <ion-grid class="grid--table">
-
     <ion-row>
       <ion-col><b>Height</b></ion-col>
       <ion-col *ngIf="showTimeAs === 'age'"><b>Age</b></ion-col>
@@ -36,8 +35,23 @@
 
       <ion-row *ngIf="showAllBlocksButton">
         <ion-col text-center>
-          <button ion-button small (click)="goToBlocks()" [disabled]="blocks.length == 0">See all blocks</button>
-          <button ion-button small color="secondary" (click)="goToAnchoredBlocks()" [disabled]="blocks.length == 0">See all anchored blocks</button>
+          <button
+            ion-button
+            small
+            (click)="goToBlocks()"
+            [disabled]="blocks.length == 0"
+          >
+            See all blocks
+          </button>
+          <button
+            ion-button
+            small
+            color="secondary"
+            (click)="goToAnchoredBlocks()"
+            [disabled]="blocks.length == 0"
+          >
+            See all anchored blocks
+          </button>
         </ion-col>
       </ion-row>
 
