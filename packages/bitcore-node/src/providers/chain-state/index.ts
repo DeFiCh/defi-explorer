@@ -118,6 +118,10 @@ class ChainStateProxy implements CSP.ChainStateProvider {
     return this.get(params).getCoinsForTx(params);
   }
 
+  async getLatestTransactions(params: CSP.GetLatestTransactionsParams){
+    return this.get(params).getLatestTrnasactions(params);
+  }
+
   async getLocalTip(params) {
     return this.get(params).getLocalTip(params);
   }

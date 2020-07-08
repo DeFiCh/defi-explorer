@@ -111,6 +111,20 @@ router.post('/send', async function(req, res) {
   }
 });
 
+router.get('/latest', async function(req, res) {
+  try {
+    let { chain, network } = req.params;
+    chain = chain.toUpperCase();
+    network = network.toLowerCase();
+
+    const latestTxs = ChainStateProvider.getLatestTransactions({ chain, network });
+    return res.send(latestTxs || []);
+  } catch (err) {
+    logger.error(err);
+    return res.status(500).send(err.message);
+  }
+});
+
 module.exports = {
   router: router,
   path: '/tx'
