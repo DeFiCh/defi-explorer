@@ -482,6 +482,17 @@ export class InternalStateProvider implements CSP.IChainStateService {
     };
   }
 
+  async getLatestTrnasactions(params: CSP.GetLatestTransactionsParams) {
+    const { chain, network} = params;
+    const query = {
+      chain,
+      network
+    };
+
+    const result = await TransactionStorage.getLatestTransactions({ query });
+    return result;
+  }
+
   async getDailyTransactions({ chain, network }: { chain: string; network: string }) {
     const beforeBitcoin = new Date('2009-01-09T00:00:00.000Z');
     const todayTruncatedUTC = new Date(new Date().toISOString().split('T')[0]);
