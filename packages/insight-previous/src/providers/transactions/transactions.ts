@@ -117,7 +117,7 @@ export class TxsProvider {
     public currency: CurrencyProvider,
     public blocksProvider: BlocksProvider,
     private api: ApiProvider
-  ) {}
+  ) { }
 
   public getFee(tx: AppTx): number {
     const sumSatoshis: any = (arr: any): number =>
@@ -182,5 +182,10 @@ export class TxsProvider {
     return this.blocksProvider.getCurrentHeight().map(data => {
       return blockheight > 0 ? data.height - blockheight + 1 : blockheight;
     });
+  }
+
+  public getLatestTransaction(): Observable<any> {
+    const url: string = this.api.getUrl() + '/tx/latest';
+    return this.httpClient.get<any>(url)
   }
 }
