@@ -3,9 +3,22 @@
 <ion-content>
   <ion-grid fixed>
     <div class="page-content">
-      <h2>Address Rich List</h2>
+      <h2>Rich List</h2>
       <rich-listings #latestRichList></rich-listings>
     </div>
+    <ion-infinite-scroll
+      threshold="10%"
+      position="bottom"
+      (ionInfinite)="doInfinite($event)"
+      *ngIf="enableInfiniteScroller"
+    >
+      <ion-infinite-scroll-content
+        text-center
+        loadingSpinner="bubbles"
+        loadingText="Loading more data..."
+      >
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
   </ion-grid>
 </ion-content>
 <footer [chainNetwork]="chainNetwork"></footer>

@@ -18,6 +18,7 @@ import { PriceProvider } from '../../providers/price/price';
 import { RedirProvider } from '../../providers/redir/redir';
 import { SearchProvider } from '../../providers/search/search';
 import { DenominationComponent } from '../denomination/denomination';
+import { MoreComponent } from '../more/more';
 
 @Component({
   selector: 'head-nav',
@@ -153,8 +154,8 @@ export class HeadNavComponent implements OnInit {
       if (!data) {
         return;
       } else if (
-          data.chainNetwork.chain !== this.config.chain ||
-          data.chainNetwork.network !== this.config.network
+        data.chainNetwork.chain !== this.config.chain ||
+        data.chainNetwork.network !== this.config.network
       ) {
         this.apiProvider.changeNetwork(data.chainNetwork);
         this.config = this.apiProvider.getConfig();
@@ -201,6 +202,24 @@ export class HeadNavComponent implements OnInit {
     } else {
       return false;
     }
+  }
+
+  public goToPage(myEvent: any) {
+    const popover: any = this.popoverCtrl.create(
+      MoreComponent,
+      {
+        config: this.config
+      },
+      {
+        cssClass: 'test'
+      }
+    );
+    popover.present({
+      ev: myEvent
+    });
+    popover.onDidDismiss(data => {
+      return data;
+    });
   }
 
   private isValidAddress(inputValue): boolean {
