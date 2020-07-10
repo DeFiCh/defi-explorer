@@ -1,5 +1,6 @@
 import { TransactionJSON } from '../../../types/Transaction';
 import through2 from 'through2';
+import axios from 'axios';
 
 import { MongoBound } from '../../../models/base';
 import { ObjectId } from 'mongodb';
@@ -17,6 +18,7 @@ import { StringifyJsonStream } from '../../../utils/stringifyJsonStream';
 import { StateStorage } from '../../../models/state';
 import { SpentHeightIndicators, CoinJSON } from '../../../types/Coin';
 import { Config } from '../../../services/config';
+import { STATS_URL } from '../../../constants/config';
 
 @LoggifyClass
 export class InternalStateProvider implements CSP.IChainStateService {
@@ -74,15 +76,15 @@ export class InternalStateProvider implements CSP.IChainStateService {
   }
 
   async getRichList(params: CSP.GetRichListParams) {
-    const { chain, network, pageNo, pageSize } = params;
+    const { chain, network, pageNo } = params;
     const query = {
       chain,
       network,
-      pageNo,
-      pageSize
+      pageNo
     };
-    const balance = await CoinStorage.getRichList({query});
-    return balance;
+
+    const result = await CoinStorage.getRichList({ query });
+    return result;
   }
 
   streamBlocks(params: CSP.StreamBlocksParams) {
@@ -530,6 +532,16 @@ export class InternalStateProvider implements CSP.IChainStateService {
       network,
       results
     };
+  }
+
+  async getStats(params: CSP.GetStatsParams) {
+    const { network } = params;
+
+    const result = await axios({
+      method: 'get',
+      url: `${STATS_URL}?network=${network}`,
+    });
+    return result.data;
   }
 
   async getLocalTip({ chain, network }) {

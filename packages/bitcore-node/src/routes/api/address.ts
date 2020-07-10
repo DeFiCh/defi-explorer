@@ -1,6 +1,7 @@
 import express = require('express');
 const router = express.Router({ mergeParams: true });
 import { ChainStateProvider } from '../../providers/chain-state';
+import queue from '../../worker/queue';
 
 router.get('/:address/txs', function(req, res) {
   let { address, chain, network } = req.params;
@@ -50,14 +51,21 @@ router.get('/stats/rich-list', async function(req, res) {
   try {
     if (pageno) {
       pageno = parseInt(pageno);
-    }
-
-    if (pagesize) {
       pagesize = parseInt(pagesize);
     }
 
-    const result = await ChainStateProvider.getRichList({ chain, network, pageNo: pageno, pageSize: pagesize });
-    return res.send(result || []);
+    queue.push(
+      {
+        methodName: ChainStateProvider.getRichList.bind(ChainStateProvider),
+        params: [{ chain, network, pageNo: pageno, pageSize: pagesize }]
+      },
+      (err, result) => {
+        if (err) {
+          throw new Error(err.message);
+        }
+        res.send(result || []);
+      }
+    );
   } catch (err) {
     return res.status(500).send(err);
   }

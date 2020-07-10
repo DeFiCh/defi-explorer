@@ -9,41 +9,39 @@ import { insertGenesisData } from './genesisData';
 import { MAINNET, TESTNET } from './constants/config';
 require('heapdump');
 let args = parseArgv([], ['DEBUG']);
-const services: Array<any> = [];
 
 process.on('unhandledRejection', error => {
   console.error('Unhandled Rejection at:', error.stack || error);
-  stop();
 });
 
+
+const runMaster = async () => {
+  await Worker.start();
+  P2P.start();
+
+  // start the API on master if we are in debug
+  if (args.DEBUG) {
+    Api.start();
+  }
+};
+
+const runWorker = async () => {
+  // don't run any workers when in debug mode
+  if (!args.DEBUG) {
+    // Api will automatically start storage if it isn't already running
+    Api.start();
+  }
+};
+
 const start = async () => {
-  services.push(Storage, Event);
+  await Storage.start();
+  Event.start();
   if (cluster.isMaster) {
-    services.push(P2P);
-    services.push(Worker);
-    if (args.DEBUG) {
-      services.push(Api);
-    }
+    await runMaster();
   } else {
-    if (!args.DEBUG) {
-      services.push(Api);
-    }
-  }
-  for (const service of services) {
-    await service.start();
+    await runWorker();
   }
 };
-
-const stop = async () => {
-  console.log(`Shutting down ${process.pid}`);
-  for (const service of services.reverse()) {
-    await service.stop();
-  }
-  process.exit();
-};
-
-process.on('SIGTERM', stop);
-process.on('SIGINT', stop);
 
 (async () => {
   await start();

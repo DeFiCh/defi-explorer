@@ -35,23 +35,25 @@ export declare namespace CSP {
   export type GetRichListParams = ChainNetwork & {
     pageNo: number;
     pageSize: number;
-  }
+  };
 
   export type GetBlockParams = ChainNetwork & {
     blockId?: string;
     sinceBlock?: number | string;
     anchorsOnly?: boolean;
-    args?: Partial<{
-      startDate: Date;
-      endDate: Date;
-      date: Date;
-    } & StreamingFindOptions<IBlock>>;
+    args?: Partial<
+      {
+        startDate: Date;
+        endDate: Date;
+        date: Date;
+      } & StreamingFindOptions<IBlock>
+    >;
   };
   export type StreamBlocksParams = ChainNetwork & {
     blockId?: string;
     sinceBlock: number | string;
     anchorsOnly: boolean;
-    args?: Partial<{ startDate: Date; endDate: Date; date: Date; } & StreamingFindOptions<IBlock>>;
+    args?: Partial<{ startDate: Date; endDate: Date; date: Date } & StreamingFindOptions<IBlock>>;
     req: Request;
     res: Response;
   };
@@ -150,6 +152,7 @@ export declare namespace CSP {
     streamTransactions(params: StreamTransactionsParams): any;
     getAuthhead(params: StreamTransactionParams): Promise<AuthheadJSON | undefined>;
     getDailyTransactions(params: { chain: string; network: string }): Promise<DailyTransactionsJSON>;
+    getStats(params: GetStatsParams): Promise<any>;
     getTransaction(params: StreamTransactionParams): Promise<TransactionJSON | string | undefined>;
     streamWalletAddresses(params: StreamWalletAddressesParams): any;
     walletCheck(params: WalletCheckParams): any;

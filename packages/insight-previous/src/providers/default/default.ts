@@ -7,11 +7,13 @@ export class DefaultProvider {
     '%API_PREFIX%': string;
     '%NETWORK%': string;
     '%NUM_BLOCKS%': string;
+    '%NUM_TRX_BLOCKS%': string;
   } = {
     '%CHAIN%': process.env.CHAIN || 'BTC',
     '%API_PREFIX%': process.env.API_PREFIX || '/api',
     '%NETWORK%': process.env.NETWORK || 'mainnet',
-    '%NUM_BLOCKS%': process.env.NUM_BLOCKS || '15'
+    '%NUM_BLOCKS%': process.env.NUM_BLOCKS || '20',
+    '%NUM_TRX_BLOCKS%': process.env.NUM_TRX_BLOCKS || '10'
   };
 
   constructor() {}

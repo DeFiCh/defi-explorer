@@ -6,6 +6,8 @@ import { valueOrDefault } from '../utils/check';
 import { StorageService } from '../services/storage';
 import { BlockStorage } from './block';
 import { TransactionStorage } from './transaction';
+import { RICH_LIST_PAGE_SIZE, CACHE_TTL_SECONDS } from '../constants/config';
+import { CacheItem } from '../CacheItem';
 
 export type ICoin = {
   network: string;
@@ -22,6 +24,8 @@ export type ICoin = {
   spentHeight: number;
   confirmations?: number;
 };
+
+export const richListCache = new Map();
 
 @LoggifyClass
 class CoinModel extends BaseModel<ICoin> {
@@ -71,45 +75,97 @@ class CoinModel extends BaseModel<ICoin> {
   }
   
   async getRichList(params: { query: any }, options: CollectionAggregationOptions = {}) {
-    const { pageNo, pageSize } = params.query;
+    const { pageNo } = params.query;
+    const totalCacheName = 'total';
+    const cacheResult = richListCache.get(pageNo);
+    const totalCountCacheResult = richListCache.get(totalCacheName);
+    const baseCodition = [
+      {
+        $match: {
+          address: { $ne: 'false' },
+          spentHeight: { $lt: SpentHeightIndicators.minimum },
+          mintHeight: { $gt: SpentHeightIndicators.conflicting }
+        }
+      },
+      { $group: { _id: '$address', balance: { $sum: '$value' } } },
+      {
+        $project: {
+          _id: 0,
+          address: '$_id',
+          balance: 1
+        }
+      }
+    ];
 
-    const result: any = await this.collection
-      .aggregate(
-        [
-          { $group: { _id: '$address', balance: { $sum: '$value' } } },
-          {
-            $project: {
-              _id: 0,
-              address: '$_id',
-              balance: 1
-            }
-          },
-          { $sort: { balance: -1 } },
-          { $skip: pageSize * (pageNo - 1) },
-          { $limit: pageSize }
-        ],
-        options
-      )
-      .toArray();
+    const additionalCondition = [
+      { $sort: { balance: -1 } },
+      { $skip: RICH_LIST_PAGE_SIZE * (pageNo - 1) },
+      { $limit: RICH_LIST_PAGE_SIZE }
+    ];
 
-    const updatedResult = await Promise.all(
-      result.map(async curr => {
-        const txIds = await this.getTransactionIdsForAddress({ query: { address: curr.address } });
+    const response = {};
 
-        curr.txCount = await TransactionStorage.getTransactionCount({ query: { txIds } });
-
-        curr.firstTxTime = await TransactionStorage.getFirstTransactionTime({
+    const prepareRichListRow = async txIds => {
+      const data = {
+        txCount: '',
+        firstTxTime: '',
+        lastTxTime: ''
+      };
+      const tasks = [
+        TransactionStorage.getTransactionCount({ query: { txIds } }),
+        TransactionStorage.getFirstTransactionTime({
           query: { txIds }
-        });
-        curr.lastTxTime = await TransactionStorage.getLastTransactionTime({
+        }),
+        TransactionStorage.getLastTransactionTime({
           query: { txIds }
-        });
+        })
+      ];
 
-        return curr;
-      })
-    );
+      const taskResult = await Promise.all(tasks);
 
-    return updatedResult;
+      Object.keys(data).forEach((item, ind) => {
+        data[item] = taskResult[ind];
+      });
+      return data;
+    };
+
+    const fetchRichList = async conditions => {
+      const result: any = await this.collection.aggregate(conditions, options).toArray();
+      const updatedResult = await Promise.all(
+        result.map(async curr => {
+          const txIds = await this.getTransactionIdsForAddress({ query: { address: curr.address } });
+          const data = await prepareRichListRow(txIds);
+          return Object.assign({}, curr, data);
+        })
+      );
+      return updatedResult || [];
+    };
+
+    const setCache = (key, value) => {
+      const cache = new CacheItem(value);
+      richListCache.set(key, cache);
+    };
+    // Have time stamp within the last 300 seconds, skip fetching again.
+    if (!cacheResult || !cacheResult.isRecent(CACHE_TTL_SECONDS)) {
+      const updatedConditions = [...baseCodition, ...additionalCondition];
+
+      const result: any = await fetchRichList(updatedConditions);
+
+      // add data to cache
+      setCache(pageNo, result);
+      response['data'] = result;
+    } else {
+      response['data'] = cacheResult.value;
+    }
+
+    if (!totalCountCacheResult || !totalCountCacheResult.isRecent(CACHE_TTL_SECONDS)) {
+      const result = await fetchRichList(baseCodition);
+      setCache(totalCacheName, result.length);
+      response[totalCacheName] = result.length;
+    } else {
+      response[totalCacheName] = totalCountCacheResult.value;
+    }
+    return response;
   }
 
   async getTransactionIdsForAddress(params: { query: any }) {

@@ -1,0 +1,156 @@
+<ion-row class="about-card">
+  <ion-col col-12>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <h2 class="main-heading">
+            About
+          </h2>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-row>
+          <ion-col col-12 class="boxed">
+            <p>DeFi Blockchain’s primary vision is to enable decentralized finance with Bitcoin-grade security,
+              strength and
+              immutability. It's a blockchain dedicated to fast, intelligent and transparent financial services,
+              accessible
+              by everyone.</p>
+            <p>For more information, please visit our website at <a href="https://defichain.io"
+                rel="nofollow" target="_blank">defichain.io</a></p>
+          </ion-col>
+        </ion-row>
+      </ion-card-content>
+    </ion-card>
+  </ion-col>
+  <ion-col col-12>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <h2>
+            Resources
+          </h2>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ul class="resources-list">
+          <li><a href="https://github.com/defich/ain/" target="_blank">GitHub</a></li>
+          <li><a href="https://github.com/defich/ain/releases" target="_blank">Binary releases</a></li>
+          <li><a href="https://defichain.io/white-paper/" target="_blank">White paper</a></li>
+          <li><a (click)="goToRichList()">Rich list</a></li>
+        </ul>
+      </ion-card-content>
+    </ion-card>
+  </ion-col>
+  <ion-col col-12>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <h2>
+            Quick Stats
+          </h2>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <error [message]="errorMessage" *ngIf="errorMessage"></error>
+        <loader *ngIf="loading" [type]="'title'"></loader>
+        <div *ngIf="!errorMessage && !loading">
+
+          <ion-grid class="grid--table">
+            <ion-col class="heading" col-12>
+              <h5>General Information</h5>
+            </ion-col>
+            <ion-row>
+              <ion-col col-6>
+                Chain
+              </ion-col>
+              <ion-col col-6 text-right>
+                {{quickStats.chain}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col col-6>
+                Block Height
+              </ion-col>
+              <ion-col col-6 text-right>
+                {{quickStats.blockHeight}}
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+
+          <ion-grid class="grid--table">
+            <ion-col class="heading" col-12>
+              <h5>
+                Supply
+              </h5>
+            </ion-col>
+            <ion-row>
+              <ion-col col-6>
+                Total
+              </ion-col>
+              <ion-col col-6 text-right>
+                {{quickStats.supply.total}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col col-6>
+                Circulation
+              </ion-col>
+              <ion-col col-6 text-right>
+                {{quickStats.supply.circulation}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col col-6>
+                Foundation
+              </ion-col>
+              <ion-col col-6 text-right>
+                {{quickStats.supply.foundation}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col col-6>
+                Community
+              </ion-col>
+              <ion-col col-6 text-right>
+                {{quickStats.supply.community}}
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+
+          <ion-grid class="grid--table">
+            <ion-col class="heading" col-12>
+              <h5>
+                Rewards
+              </h5>
+            </ion-col>
+            <ion-row>
+              <ion-col col-6>
+                Total
+              </ion-col>
+              <ion-col col-6 text-right>
+                {{quickStats.rewards.total}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col col-6>
+                Community
+              </ion-col>
+              <ion-col col-6 text-right>
+                {{quickStats.rewards.community}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col col-6>
+                Minter
+              </ion-col>
+              <ion-col col-6 text-right>
+                {{quickStats.rewards.minter}}
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </ion-col>
+</ion-row>
