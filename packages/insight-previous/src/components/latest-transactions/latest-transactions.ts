@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ApiProvider } from '../../providers/api/api';
 import { CurrencyProvider } from '../../providers/currency/currency';
 import { DefaultProvider } from '../../providers/default/default';
+import { TxsProvider } from '../../providers/transactions/transactions'
 import { Logger } from '../../providers/logger/logger';
 import { RedirProvider } from '../../providers/redir/redir';
 import { WebsocketProvider } from '../../providers/websocket/websocketProvider';
@@ -23,7 +24,8 @@ export class LatestTransactionsComponent implements OnInit {
     public redirProvider: RedirProvider,
     private logger: Logger,
     private websocketProvider: WebsocketProvider,
-    public defaultProvider: DefaultProvider
+    public defaultProvider: DefaultProvider,
+    private txsProvider: TxsProvider
   ) {
     this.rowLimit = parseInt(
       defaultProvider.getDefault('%NUM_TRX_BLOCKS%'),
@@ -32,7 +34,25 @@ export class LatestTransactionsComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.loadTransactions();
+    this.txsProvider.getLatestTransaction().subscribe(
+      (response: Array<any>) => {
+        if (response.length > 0) {
+          const data = response;
+          this.transactions = data.reverse();
+          this.transactionsLatest = response;
+        }
+        else {
+          this.errorMessage = 'No transaction found';
+        }
+        this.loading = false;
+        this.loadTransactions();
+      },
+      err => {
+        this.loading = false;
+        this.logger.error(err);
+        this.errorMessage = err.message;
+        this.loadTransactions();
+      })
   }
 
   private loadTransactions(): void {
@@ -42,9 +62,7 @@ export class LatestTransactionsComponent implements OnInit {
           if (this.transactions.length >= this.rowLimit) {
             this.transactions.shift();
           }
-          this.transactions.push(JSON.parse(response.data));
-          const temp = [...this.transactions];
-          this.transactionsLatest = temp.reverse();
+          this.insertTrx(response.data)
           this.loading = false;
         }
       },
@@ -54,6 +72,12 @@ export class LatestTransactionsComponent implements OnInit {
         this.loading = false;
       }
     );
+  }
+
+  private insertTrx(data) {
+    this.transactions.push(JSON.parse(data));
+    const temp = [...this.transactions];
+    this.transactionsLatest = temp.reverse();
   }
 
   public goToTx(txId: string): void {

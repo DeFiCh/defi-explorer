@@ -37,6 +37,8 @@ export declare namespace CSP {
     pageSize: number;
   };
 
+  export type GetLatestTransactionsParams = ChainNetwork;
+
   export type GetBlockParams = ChainNetwork & {
     blockId?: string;
     sinceBlock?: number | string;
@@ -160,6 +162,7 @@ export declare namespace CSP {
     streamWalletUtxos(params: StreamWalletUtxosParams): any;
     streamMissingWalletAddresses(params: StreamWalletMissingAddressesParams);
     getCoinsForTx(params: { chain: string; network: string; txid: string }): Promise<CoinListingJSON>;
+    getLatestTrnasactions(params: GetLatestTransactionsParams): Promise<any>;
     getLocalTip(params): Promise<any>;
     getLocatorHashes(params): Promise<any>;
   }
