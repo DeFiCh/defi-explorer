@@ -7,7 +7,7 @@ import { TransactionJSON } from '../../types/Transaction';
 import { CacheTimes } from '../middleware';
 const router = Router({ mergeParams: true });
 
-router.get('/', function(req, res) {
+router.get('/', function (req, res) {
   let { chain, network } = req.params;
   let { blockHeight, blockHash, limit, since, direction, paging } = req.query;
   if (!chain || !network) {
@@ -33,6 +33,20 @@ router.get('/', function(req, res) {
     payload.args.blockHash = blockHash;
   }
   return ChainStateProvider.streamTransactions(payload);
+});
+
+router.get('/latest', async function (req, res) {
+  try {
+    let { chain, network } = req.params;
+    chain = chain.toUpperCase();
+    network = network.toLowerCase();
+
+    const latestTxs = await ChainStateProvider.getLatestTransactions({ chain, network });
+    return res.send(latestTxs || []);
+  } catch (err) {
+    logger.error(err);
+    return res.status(500).send(err.message);
+  }
 });
 
 router.get('/:txId', async (req, res) => {
@@ -93,7 +107,7 @@ router.get('/:txid/coins', (req, res, next) => {
   }
 });
 
-router.post('/send', async function(req, res) {
+router.post('/send', async function (req, res) {
   try {
     let { chain, network } = req.params;
     let { rawTx } = req.body;

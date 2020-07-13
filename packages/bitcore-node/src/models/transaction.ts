@@ -582,6 +582,16 @@ export class TransactionModel extends BaseModel<ITransaction> {
     return lastTransactionTime[0].blockTime;
   }
 
+  async getLatestTransactions(params: { query: any }) {
+    const latestTxs = await this.collection
+      .find()
+      .addCursorFlag('noCursorTimeout', true)
+      .sort({ blockTime: -1 })
+      .limit(10)
+      .toArray();
+    return latestTxs;
+  }
+
   _apiTransform(tx: Partial<MongoBound<ITransaction>>, options?: TransformOptions): TransactionJSON | string {
     const transaction: TransactionJSON = {
       _id: tx._id ? tx._id.toString() : '',
