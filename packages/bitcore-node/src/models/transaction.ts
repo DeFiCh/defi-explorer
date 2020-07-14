@@ -106,6 +106,13 @@ export class TransactionModel extends BaseModel<ITransaction> {
     );
   }
 
+  async insertGenesisTransaction(transaction: ITransaction, txid: string) {
+    const count = await this.collection.find({ txid }).count();
+    if (count === 0) {
+      await this.collection.insert(transaction);
+    }
+  }
+
   async batchImport(params: {
     txs: Array<Defichain.Transaction>;
     height: number;

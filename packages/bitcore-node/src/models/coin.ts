@@ -20,7 +20,7 @@ export type ICoin = {
   address: string;
   script: Buffer;
   wallets: Array<ObjectID>;
-  spentTxid: string;
+  spentTxid?: string;
   spentHeight: number;
   confirmations?: number;
 };
@@ -67,6 +67,13 @@ class CoinModel extends BaseModel<ICoin> {
     );
   }
 
+  async insertGenesisCoins(coin: ICoin, address: string, mintTxid: string) {
+    const count = await this.collection.find({ address, mintTxid }).count();
+    if (count === 0) {
+      await this.collection.insert(coin);
+    }
+  }
+  
   async getRichList(params: { query: any }, options: CollectionAggregationOptions = {}) {
     const { pageNo } = params.query;
     const totalCacheName = 'total';
