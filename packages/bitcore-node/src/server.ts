@@ -5,8 +5,10 @@ import { Api } from './services/api';
 import cluster = require('cluster');
 import parseArgv from './utils/parseArgv';
 import { Event } from './services/event';
-let args = parseArgv([], ['DEBUG']);
+import { insertGenesisData } from './genesisData';
+import { MAINNET, TESTNET } from './constants/config';
 require('heapdump');
+let args = parseArgv([], ['DEBUG']);
 
 process.on('unhandledRejection', error => {
   console.error('Unhandled Rejection at:', error.stack || error);
@@ -41,4 +43,11 @@ const start = async () => {
   }
 };
 
-start();
+(async () => {
+  await start();
+
+  const network = process.env.NETWORK;
+  // insert data to db for pre-mined coins for mainnet and testnet
+  (network === MAINNET || network === TESTNET) && (await insertGenesisData(network));
+
+})();
