@@ -6,16 +6,16 @@ services:
     networks:
       - default
     ports:
-    - 27017
+      - 27017
     volumes:
-    - db_data:/data/db
+      - db_data:/data/db
     restart: unless-stopped
 
   defichain:
     image: defi/defichain:1.0.0-rc1
-    networks: 
+    networks:
       - default
-    environment: 
+    environment:
       - NETWORK=${NETWORK:?NETWORK env required}
     ports:
       - 8555
@@ -42,9 +42,11 @@ services:
       - DB_HOST=database
       - CHAIN=DFI
       - BITCORE_CONFIG_PATH=bitcore.config.json
+      - BITCORE_NODE_FILE_LOG=${BITCORE_NODE_FILE_LOG:-false}
+      - BITCORE_NODE_SENTRY_DNS=${BITCORE_NODE_SENTRY_DNS:-false}
     ports:
       - ${API_PORT}:3000
-    volumes: 
+    volumes:
       - ./bitcore.${NETWORK}.config.json:/usr/src/app/bitcore.config.json
     depends_on:
       - database
@@ -57,7 +59,7 @@ services:
     # network_mode: host
     networks:
       - default
-    command: ["npm", "run", "insight-previous:prod"]
+    command: ['npm', 'run', 'insight-previous:prod']
     environment:
       - NETWORK=${NETWORK:?NETWORK env required}
       - API_PREFIX=${API_PREFIX:?API_PREFIX env required}
@@ -67,12 +69,12 @@ services:
       - BITCORE_CONFIG_PATH=bitcore.config.json
     ports:
       - ${HTTP_PORT}:5000
-    volumes: 
+    volumes:
       - ./bitcore.${NETWORK}.config.json:/usr/src/app/bitcore.config.json
     depends_on:
       - bitcore-node
     restart: unless-stopped
 
-volumes: 
+volumes:
   db_data:
   node_data:
