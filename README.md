@@ -29,6 +29,8 @@ Please have a look at the `docker-compose.yml` file for other defaults and env u
 - `API_PREFIX` [required] - The full path prefix to the bitcore API endpoint
 - `HTTP_PORT` [default: 5000] - The final web endpoint of the insight explorer
 - `API_PORT` [default: 3000] - The bitcore API endpoint port
+- `BITCORE_NODE_FILE_LOG` [default: false] - When "true" it will create a local log file using winston
+- `BITCORE_NODE_SENTRY_DNS` [default: false] - An api key for sentry when present logs response on sentry
 
 ### Conf files
 
