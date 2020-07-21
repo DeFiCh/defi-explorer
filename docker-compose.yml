@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.0'
 
 services:
   database:
@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
 
   defichain:
-    image: defi/defichain:1.0.0-rc1
+    image: defi/defichain:1.0.0
     networks:
       - default
     environment:
