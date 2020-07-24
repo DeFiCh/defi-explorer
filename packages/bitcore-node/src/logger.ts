@@ -20,7 +20,7 @@ if (process.env.BITCORE_NODE_FILE_LOG === 'true') {
   additionalTransports.push(new winston.transports.File({
     colorize: true,
     level: logLevel,
-    filename: path.join(__dirname, 'app.log'),
+    filename: path.join(__dirname, '../../app.log'),
     json: true,
     maxsize: 5242880, // 5MB
     maxFiles: 5,
