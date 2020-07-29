@@ -35,7 +35,7 @@ class CoinModel extends BaseModel<ICoin> {
 
   allowedPaging = [
     { key: 'mintHeight' as 'mintHeight', type: 'number' as 'number' },
-    { key: 'spentHeight' as 'spentHeight', type: 'number' as 'number' }
+    { key: 'spentHeight' as 'spentHeight', type: 'number' as 'number' },
   ];
 
   onConnect() {
@@ -45,8 +45,8 @@ class CoinModel extends BaseModel<ICoin> {
       {
         background: true,
         partialFilterExpression: {
-          spentHeight: { $lt: 0 }
-        }
+          spentHeight: { $lt: 0 },
+        },
       }
     );
     this.collection.createIndex({ address: 1 }, { background: true });
@@ -73,9 +73,11 @@ class CoinModel extends BaseModel<ICoin> {
       await this.collection.insert(coin);
     }
   }
-  
+
   async getRichList(params: { query: any }, options: CollectionAggregationOptions = {}) {
     const { pageNo } = params.query;
+    const pageSize =
+      !params.query.pageSize || params.query.pageSize === NaN ? RICH_LIST_PAGE_SIZE : params.query.pageSize;
     const totalCacheName = 'total';
     const cacheResult = richListCache.get(pageNo);
     const totalCountCacheResult = richListCache.get(totalCacheName);
@@ -84,41 +86,37 @@ class CoinModel extends BaseModel<ICoin> {
         $match: {
           address: { $ne: 'false' },
           spentHeight: { $lt: SpentHeightIndicators.minimum },
-          mintHeight: { $gt: SpentHeightIndicators.conflicting }
-        }
+          mintHeight: { $gt: SpentHeightIndicators.conflicting },
+        },
       },
       { $group: { _id: '$address', balance: { $sum: '$value' } } },
       {
         $project: {
           _id: 0,
           address: '$_id',
-          balance: 1
-        }
-      }
+          balance: 1,
+        },
+      },
     ];
 
-    const additionalCondition = [
-      { $sort: { balance: -1 } },
-      { $skip: RICH_LIST_PAGE_SIZE * (pageNo - 1) },
-      { $limit: RICH_LIST_PAGE_SIZE }
-    ];
+    const additionalCondition = [{ $sort: { balance: -1 } }, { $skip: pageSize * (pageNo - 1) }, { $limit: pageSize }];
 
     const response = {};
 
-    const prepareRichListRow = async txIds => {
+    const prepareRichListRow = async (txIds) => {
       const data = {
         txCount: '',
         firstTxTime: '',
-        lastTxTime: ''
+        lastTxTime: '',
       };
       const tasks = [
         TransactionStorage.getTransactionCount({ query: { txIds } }),
         TransactionStorage.getFirstTransactionTime({
-          query: { txIds }
+          query: { txIds },
         }),
         TransactionStorage.getLastTransactionTime({
-          query: { txIds }
-        })
+          query: { txIds },
+        }),
       ];
 
       const taskResult = await Promise.all(tasks);
@@ -129,10 +127,10 @@ class CoinModel extends BaseModel<ICoin> {
       return data;
     };
 
-    const fetchRichList = async conditions => {
+    const fetchRichList = async (conditions) => {
       const result: any = await this.collection.aggregate(conditions, options).toArray();
       const updatedResult = await Promise.all(
-        result.map(async curr => {
+        result.map(async (curr) => {
           const txIds = await this.getTransactionIdsForAddress({ query: { address: curr.address } });
           const data = await prepareRichListRow(txIds);
           return Object.assign({}, curr, data);
@@ -187,18 +185,18 @@ class CoinModel extends BaseModel<ICoin> {
                 $cond: {
                   if: { $gte: ['$mintHeight', SpentHeightIndicators.minimum] },
                   then: 'confirmed',
-                  else: 'unconfirmed'
-                }
+                  else: 'unconfirmed',
+                },
               },
-              _id: 0
-            }
+              _id: 0,
+            },
           },
           {
             $group: {
               _id: '$status',
-              balance: { $sum: '$value' }
-            }
-          }
+              balance: { $sum: '$value' },
+            },
+          },
         ],
         options
       )
@@ -220,8 +218,8 @@ class CoinModel extends BaseModel<ICoin> {
         $query: {
           chain,
           network,
-          timeNormalized: { $lte: new Date(time) }
-        }
+          timeNormalized: { $lte: new Date(time) },
+        },
       })
       .limit(1)
       .sort({ timeNormalized: -1 })
@@ -231,7 +229,7 @@ class CoinModel extends BaseModel<ICoin> {
       {},
       {
         $or: [{ spentHeight: { $gt: blockHeight } }, { spentHeight: SpentHeightIndicators.unspent }],
-        mintHeight: { $lte: blockHeight }
+        mintHeight: { $lte: blockHeight },
       },
       query
     );
@@ -251,8 +249,8 @@ class CoinModel extends BaseModel<ICoin> {
             mintTxid: mintTxid.toLowerCase(),
             mintIndex: 0,
             ...(typeof chain === 'string' ? { chain } : {}),
-            ...(typeof network === 'string' ? { network } : {})
-          }
+            ...(typeof network === 'string' ? { network } : {}),
+          },
         },
         {
           $graphLookup: {
@@ -263,9 +261,9 @@ class CoinModel extends BaseModel<ICoin> {
             as: 'authheads',
             maxDepth: 1000000,
             restrictSearchWithMatch: {
-              mintIndex: 0
-            }
-          }
+              mintIndex: 0,
+            },
+          },
         },
         {
           $project: {
@@ -279,20 +277,20 @@ class CoinModel extends BaseModel<ICoin> {
                 cond: {
                   $and: [
                     {
-                      $lte: ['$$authhead.spentHeight', -1]
+                      $lte: ['$$authhead.spentHeight', -1],
                     },
                     {
-                      $eq: ['$$authhead.chain', '$chain']
+                      $eq: ['$$authhead.chain', '$chain'],
                     },
                     {
-                      $eq: ['$$authhead.network', '$network']
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
+                      $eq: ['$$authhead.network', '$network'],
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
       ])
       .toArray();
   }
@@ -311,7 +309,7 @@ class CoinModel extends BaseModel<ICoin> {
       address: valueOrDefault(coin.address, ''),
       script: valueOrDefault(coin.script, Buffer.alloc(0)).toString('hex'),
       value: valueOrDefault(coin.value, -1),
-      confirmations: valueOrDefault(coin.confirmations, -1)
+      confirmations: valueOrDefault(coin.confirmations, -1),
     };
     if (options && options.object) {
       return transform;

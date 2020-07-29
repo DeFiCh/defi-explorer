@@ -69,18 +69,20 @@ export class InternalStateProvider implements CSP.IChainStateService {
       network,
       address,
       spentHeight: { $lt: SpentHeightIndicators.minimum },
-      mintHeight: { $gt: SpentHeightIndicators.conflicting }
+      mintHeight: { $gt: SpentHeightIndicators.conflicting },
     };
     let balance = await CoinStorage.getBalance({ query });
     return balance;
   }
 
   async getRichList(params: CSP.GetRichListParams) {
-    const { chain, network, pageNo } = params;
+    const { chain, network, pageNo, pageSize } = params;
+
     const query = {
       chain,
       network,
-      pageNo
+      pageNo,
+      pageSize,
     };
 
     const result = await CoinStorage.getRichList({ query });
@@ -125,7 +127,7 @@ export class InternalStateProvider implements CSP.IChainStateService {
     let query: any = {
       chain: chain,
       network: network.toLowerCase(),
-      processed: true
+      processed: true,
     };
     if (blockId) {
       if (blockId.length === 64) {
@@ -177,7 +179,7 @@ export class InternalStateProvider implements CSP.IChainStateService {
     }
     let query: any = {
       chain: chain,
-      network: network.toLowerCase()
+      network: network.toLowerCase(),
     };
     if (blockHeight !== undefined) {
       query.blockHeight = Number(blockHeight);
@@ -187,7 +189,7 @@ export class InternalStateProvider implements CSP.IChainStateService {
     }
     const tip = await this.getLocalTip(params);
     const tipHeight = tip ? tip.height : 0;
-    return Storage.apiStreamingFind(TransactionStorage, query, args, req, res, t => {
+    return Storage.apiStreamingFind(TransactionStorage, query, args, req, res, (t) => {
       let confirmations = 0;
       if (t.blockHeight !== undefined && t.blockHeight >= 0) {
         confirmations = tipHeight - t.blockHeight + 1;
@@ -226,14 +228,14 @@ export class InternalStateProvider implements CSP.IChainStateService {
     }
     const found = (await CoinStorage.resolveAuthhead(txId, chain, network))[0];
     if (found) {
-      const transformedCoins = found.identityOutputs.map<CoinJSON>(output =>
+      const transformedCoins = found.identityOutputs.map<CoinJSON>((output) =>
         CoinStorage._apiTransform(output, { object: true })
       );
       return {
         chain: found.chain,
         network: found.network,
         authbase: found.authbase,
-        identityOutputs: transformedCoins
+        identityOutputs: transformedCoins,
       };
     } else {
       return undefined;
@@ -259,7 +261,7 @@ export class InternalStateProvider implements CSP.IChainStateService {
       name,
       pubKey,
       path,
-      singleAddress
+      singleAddress,
     };
     await WalletStorage.collection.insertOne(wallet);
     return wallet;
@@ -278,7 +280,7 @@ export class InternalStateProvider implements CSP.IChainStateService {
 
   async walletCheck(params: CSP.WalletCheckParams) {
     let { chain, network, wallet } = params;
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const addressStream = WalletAddressStorage.collection.find({ chain, network, wallet }).project({ address: 1 });
       let sum = 0;
       let lastAddress;
@@ -304,7 +306,7 @@ export class InternalStateProvider implements CSP.IChainStateService {
     const query = { chain, network, wallets: walletId, spentHeight: { $gte: SpentHeightIndicators.minimum } };
     const cursor = CoinStorage.collection.find(query).addCursorFlag('noCursorTimeout', true);
     const seen = {};
-    const stringifyWallets = (wallets: Array<ObjectId>) => wallets.map(w => w.toHexString());
+    const stringifyWallets = (wallets: Array<ObjectId>) => wallets.map((w) => w.toHexString());
     const allMissingAddresses = new Array<string>();
     let totalMissingValue = 0;
     const missingStream = cursor.pipe(
@@ -319,8 +321,8 @@ export class InternalStateProvider implements CSP.IChainStateService {
               .addCursorFlag('noCursorTimeout', true)
               .toArray();
             const missing = spends
-              .filter(coin => !stringifyWallets(coin.wallets).includes(walletId.toHexString()))
-              .map(coin => {
+              .filter((coin) => !stringifyWallets(coin.wallets).includes(walletId.toHexString()))
+              .map((coin) => {
                 const { _id, wallets, address, value } = coin;
                 totalMissingValue += value;
                 allMissingAddresses.push(address);
@@ -332,7 +334,7 @@ export class InternalStateProvider implements CSP.IChainStateService {
           }
           return done();
         },
-        function(done) {
+        function (done) {
           this.push({ allMissingAddresses, totalMissingValue });
           done();
         }
@@ -352,7 +354,7 @@ export class InternalStateProvider implements CSP.IChainStateService {
       chain,
       network,
       wallets: wallet._id,
-      'wallets.0': { $exists: true }
+      'wallets.0': { $exists: true },
     };
 
     if (args) {
@@ -399,7 +401,7 @@ export class InternalStateProvider implements CSP.IChainStateService {
       wallets: params.wallet._id,
       'wallets.0': { $exists: true },
       spentHeight: { $lt: SpentHeightIndicators.minimum },
-      mintHeight: { $gt: SpentHeightIndicators.conflicting }
+      mintHeight: { $gt: SpentHeightIndicators.conflicting },
     };
     return CoinStorage.getBalance({ query });
   }
@@ -415,7 +417,7 @@ export class InternalStateProvider implements CSP.IChainStateService {
     let query: any = {
       wallets: wallet._id,
       'wallets.0': { $exists: true },
-      mintHeight: { $gt: SpentHeightIndicators.conflicting }
+      mintHeight: { $gt: SpentHeightIndicators.conflicting },
     };
     if (args.includeSpent !== 'true') {
       query.spentHeight = { $lt: SpentHeightIndicators.pending };
@@ -462,7 +464,7 @@ export class InternalStateProvider implements CSP.IChainStateService {
       .find({
         chain,
         network,
-        spentTxid: txid
+        spentTxid: txid,
       })
       .addCursorFlag('noCursorTimeout', true)
       .toArray();
@@ -471,22 +473,22 @@ export class InternalStateProvider implements CSP.IChainStateService {
       .find({
         chain,
         network,
-        mintTxid: txid
+        mintTxid: txid,
       })
       .addCursorFlag('noCursorTimeout', true)
       .toArray();
 
     return {
-      inputs: inputs.map(input => CoinStorage._apiTransform(input, { object: true })),
-      outputs: outputs.map(output => CoinStorage._apiTransform(output, { object: true }))
+      inputs: inputs.map((input) => CoinStorage._apiTransform(input, { object: true })),
+      outputs: outputs.map((output) => CoinStorage._apiTransform(output, { object: true })),
     };
   }
 
   async getLatestTrnasactions(params: CSP.GetLatestTransactionsParams) {
-    const { chain, network} = params;
+    const { chain, network } = params;
     const query = {
       chain,
-      network
+      network,
     };
 
     const result = await TransactionStorage.getLatestTransactions({ query });
@@ -507,41 +509,41 @@ export class InternalStateProvider implements CSP.IChainStateService {
             network,
             timeNormalized: {
               $gte: beforeBitcoin,
-              $lt: todayTruncatedUTC
-            }
-          }
+              $lt: todayTruncatedUTC,
+            },
+          },
         },
         {
           $group: {
             _id: {
               $dateToString: {
                 format: '%Y-%m-%d',
-                date: '$timeNormalized'
-              }
+                date: '$timeNormalized',
+              },
             },
             transactionCount: {
-              $sum: '$transactionCount'
-            }
-          }
+              $sum: '$transactionCount',
+            },
+          },
         },
         {
           $project: {
             _id: 0,
             date: '$_id',
-            transactionCount: '$transactionCount'
-          }
+            transactionCount: '$transactionCount',
+          },
         },
         {
           $sort: {
-            date: 1
-          }
-        }
+            date: 1,
+          },
+        },
       ])
       .toArray();
     return {
       chain,
       network,
-      results
+      results,
     };
   }
 
@@ -571,12 +573,12 @@ export class InternalStateProvider implements CSP.IChainStateService {
             processed: true,
             chain,
             network,
-            height: { $gt: startHeight, $lt: endHeight }
+            height: { $gt: startHeight, $lt: endHeight },
           }
         : {
             processed: true,
             chain,
-            network
+            network,
           };
     const locatorBlocks = await BlockStorage.collection
       .find(query, { sort: { height: -1 }, limit: 30 })
@@ -585,6 +587,6 @@ export class InternalStateProvider implements CSP.IChainStateService {
     if (locatorBlocks.length < 2) {
       return [Array(65).join('0')];
     }
-    return locatorBlocks.map(block => block.hash);
+    return locatorBlocks.map((block) => block.hash);
   }
 }
