@@ -34,7 +34,7 @@ export class TransactionComponent implements OnInit {
     public txProvider: TxsProvider,
     public redirProvider: RedirProvider,
     public blocksProvider: BlocksProvider
-  ) {}
+  ) { }
 
   public ngOnInit(): void {
     this.showCoins ? this.getCoins() : this.getConfirmations();
@@ -88,7 +88,8 @@ export class TransactionComponent implements OnInit {
     this.expanded = !this.expanded;
   }
 
-  public aggregateItems(items: any[]): any[] {
+  public aggregateItems(elements: any[]): any[] {
+    const items = elements.filter(ele => !(ele.scriptSig && !ele.address))
     if (!items) {
       return [];
     }
@@ -160,5 +161,9 @@ export class TransactionComponent implements OnInit {
     }
 
     return ret;
+  }
+
+  public aggregateVout(items: any[]): any[] {
+    return items.filter((ele) => ele.address !== 'false')
   }
 }
