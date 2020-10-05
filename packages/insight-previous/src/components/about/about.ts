@@ -1,12 +1,13 @@
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { ApiProvider } from '../../providers/api/api';
+import { CurrencyProvider } from '../../providers/currency/currency';
 import { DefaultProvider } from '../../providers/default/default';
 import { RedirProvider } from '../../providers/redir/redir';
 import { setIntervalSynchronous } from '../../utils/utility';
 
 @Component({
   selector: 'about',
-  templateUrl: 'about.html'
+  templateUrl: 'about.html',
 })
 export class AboutComponent implements OnInit, OnDestroy {
   public quickStats = { rewards: {}, supply: {}, blockHeight: '', chain: '' };
@@ -17,7 +18,8 @@ export class AboutComponent implements OnInit, OnDestroy {
     private defaultProvider: DefaultProvider,
     private redirProvider: RedirProvider,
     private apiProvider: ApiProvider,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    public currencyProvider: CurrencyProvider
   ) {}
 
   public ngOnInit(): void {
@@ -38,12 +40,12 @@ export class AboutComponent implements OnInit, OnDestroy {
 
   private loadQuickStats() {
     this.apiProvider.getStats().subscribe(
-      response => {
+      (response) => {
         this.quickStats = this.processResponse(response);
         this.errorMessage = '';
         this.loading = false;
       },
-      err => {
+      (err) => {
         this.errorMessage = err.error || err.message;
         this.loading = false;
       }
@@ -55,10 +57,18 @@ export class AboutComponent implements OnInit, OnDestroy {
       rewards,
       tokens: { supply },
       blockHeight,
-      chain
+      chain,
+      listCommunities,
     } = resp;
+    let updatedListCommunities = {};
+    if (typeof listCommunities === 'string') {
+      updatedListCommunities = {
+        AnchorReward: listCommunities,
+        IncentiveFunding: listCommunities,
+      }
+    }
 
-    return { rewards, supply, blockHeight, chain };
+    return { rewards, supply, blockHeight, chain, listCommunities: updatedListCommunities };
   }
 
   public goToRichList() {
