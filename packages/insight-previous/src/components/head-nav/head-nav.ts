@@ -251,9 +251,11 @@ export class HeadNavComponent implements OnInit {
   }
 
   private isValidDefichainMainnetAddress(data: string): boolean {
+    // @ts-ignore
     return !!bitcoreLibDfi.Address.isValid(data, 'mainnet');
   }
   private isValidDefichainTestnetAddress(data: string): boolean {
+    // @ts-ignore
     return !!bitcoreLibDfi.Address.isValid(data, 'testnet');
   }
 
