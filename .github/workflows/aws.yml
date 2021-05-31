@@ -1,6 +1,9 @@
 on:
-  release:
-    types: [created]
+  # release:
+  #   types: [created]
+  push:
+    branches:
+      - test/ecsdeploy
 
 name: Deploy to Amazon EKS
 

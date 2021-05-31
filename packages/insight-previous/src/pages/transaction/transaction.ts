@@ -38,9 +38,9 @@ export class TransactionPage {
   public loadingRawTx = true;
   public errorMessageRawTx: string;
   public customTxType = CustomTx.customTxType;
+  public chainNetwork: ChainNetwork;
 
   private txId: string;
-  private chainNetwork: ChainNetwork;
 
   constructor(
     public navParams: NavParams,

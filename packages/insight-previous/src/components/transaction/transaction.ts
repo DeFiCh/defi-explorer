@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ApiProvider } from '../../providers/api/api';
 import { BlocksProvider } from '../../providers/blocks/blocks';
 import { CurrencyProvider } from '../../providers/currency/currency';
+import { DefaultProvider } from '../../providers/default/default';
 import { RedirProvider } from '../../providers/redir/redir';
 import {
   ApiCoin,
@@ -25,16 +26,20 @@ export class TransactionComponent implements OnInit {
   @Input()
   public showCoins = false;
   public confirmations: number;
+  public network;
 
   private COIN = 100000000;
 
   constructor(
     public currencyProvider: CurrencyProvider,
+    public defaultProvider: DefaultProvider,
     public apiProvider: ApiProvider,
     public txProvider: TxsProvider,
     public redirProvider: RedirProvider,
     public blocksProvider: BlocksProvider
-  ) { }
+  ) {
+    this.network = defaultProvider.getDefault('%NETWORK%');
+  }
 
   public ngOnInit(): void {
     this.showCoins ? this.getCoins() : this.getConfirmations();

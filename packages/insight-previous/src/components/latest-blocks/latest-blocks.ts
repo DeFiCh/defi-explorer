@@ -149,9 +149,10 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   }
 
   public goToAnchoredBlocks(): void {
-    this.redirProvider.redir('anchored-blocks', {
-      chain: this.apiProvider.networkSettings.value.selectedNetwork.chain,
-      network: this.apiProvider.networkSettings.value.selectedNetwork.network
-    });
+    // this.redirProvider.redir('anchored-blocks', {
+    //   chain: this.apiProvider.networkSettings.value.selectedNetwork.chain,
+    //   network: this.apiProvider.networkSettings.value.selectedNetwork.network
+    // });
+    window.open("https://dex.defichain.com/mainnet/anchors", "_blank");
   }
 }
