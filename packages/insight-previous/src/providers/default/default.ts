@@ -17,7 +17,7 @@ export class DefaultProvider {
     //@ts-ignore
     '%NETWORK%': process.env.NETWORK || 'mainnet',
     //@ts-ignore
-    '%NUM_BLOCKS%': process.env.NUM_BLOCKS || '10',
+    '%NUM_BLOCKS%': process.env.NUM_BLOCKS || '20',
     //@ts-ignore
     '%NUM_TRX_BLOCKS%': process.env.NUM_TRX_BLOCKS || '10',
     //@ts-ignore
