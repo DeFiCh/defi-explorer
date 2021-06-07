@@ -18,10 +18,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF##*/}
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -38,15 +34,15 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ steps.get_version.outputs.VERSION }}
         run: |
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to EKS.
           # docker --version
-          docker build  --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "::set-output name=github_sha::$IMAGE_TAG"
+          docker build --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF##*/}
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF##*/}
 
   deploy_mainnet_bitcore-node:
     name: Deploy mainnet bitcore-node to EKS
@@ -55,10 +51,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF##*/}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -77,9 +69,8 @@ jobs:
           KUBE_CONFIG_DATA: ${{ secrets.AWS_MAINNET_KUBECONFIG }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ steps.get_version.outputs.VERSION }}
         with:
-          args: set image -n main --record deployment/explorer-core-deployment explorer-core=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          args: set image -n main --record deployment/explorer-core-deployment explorer-core=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
   
       - name: verify core deployment
         uses: kodermax/kubectl-aws-eks@1.0.7
@@ -96,10 +87,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF##*/}
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -117,9 +104,8 @@ jobs:
           KUBE_CONFIG_DATA: ${{ secrets.AWS_MAINNET_KUBECONFIG }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ steps.get_version.outputs.VERSION }}
         with:
-          args: set image -n main --record deployment/explorer-insight-deployment explorer-insight=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          args: set image -n main --record deployment/explorer-insight-deployment explorer-insight=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
   
       - name: verify insight deployment
         uses: kodermax/kubectl-aws-eks@1.0.7
@@ -135,10 +121,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF##*/}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -157,9 +139,8 @@ jobs:
           KUBE_CONFIG_DATA: ${{ secrets.AWS_TESTNET_KUBECONFIG }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ steps.get_version.outputs.VERSION }}
         with:
-          args: set image -n main --record deployment/explorer-core-deployment explorer-core=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          args: set image -n main --record deployment/explorer-core-deployment explorer-core=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
   
       - name: verify core deployment
         uses: kodermax/kubectl-aws-eks@1.0.7
@@ -175,10 +156,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF##*/}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -197,9 +174,8 @@ jobs:
           KUBE_CONFIG_DATA: ${{ secrets.AWS_TESTNET_KUBECONFIG }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ steps.get_version.outputs.VERSION }}
         with:
-          args: set image -n main --record deployment/explorer-insight-deployment explorer-insight=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          args: set image -n main --record deployment/explorer-insight-deployment explorer-insight=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
   
       - name: verify insight deployment
         uses: kodermax/kubectl-aws-eks@1.0.7
