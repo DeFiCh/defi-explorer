@@ -3,7 +3,7 @@ on:
   #   types: [created]
   push:
     branches:
-      - test/ecsdeploy
+      - monstrobishi-patch-1
 
 name: Deploy to Amazon EKS
 
@@ -44,142 +44,142 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF##*/}
 
-  deploy_mainnet_bitcore-node:
-    name: Deploy mainnet bitcore-node to EKS
-    needs: build_and_push_image
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  # deploy_mainnet_bitcore-node:
+  #   name: Deploy mainnet bitcore-node to EKS
+  #   needs: build_and_push_image
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-southeast-1
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: ap-southeast-1
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+  #     - name: Login to Amazon ECR
+  #       id: login-ecr
+  #       uses: aws-actions/amazon-ecr-login@v1
 
-      - name: deploy core
-        uses: kodermax/kubectl-aws-eks@1.0.7
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.AWS_MAINNET_KUBECONFIG }}
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
-        with:
-          args: set image -n main --record deployment/explorer-core-deployment explorer-core=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
+  #     - name: deploy core
+  #       uses: kodermax/kubectl-aws-eks@1.0.7
+  #       env:
+  #         KUBE_CONFIG_DATA: ${{ secrets.AWS_MAINNET_KUBECONFIG }}
+  #         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  #         ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
+  #       with:
+  #         args: set image -n main --record deployment/explorer-core-deployment explorer-core=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
   
-      - name: verify core deployment
-        uses: kodermax/kubectl-aws-eks@1.0.7
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.AWS_MAINNET_KUBECONFIG }}
-        with:
-          args: rollout status -n main deployment/explorer-core-deployment
+  #     - name: verify core deployment
+  #       uses: kodermax/kubectl-aws-eks@1.0.7
+  #       env:
+  #         KUBE_CONFIG_DATA: ${{ secrets.AWS_MAINNET_KUBECONFIG }}
+  #       with:
+  #         args: rollout status -n main deployment/explorer-core-deployment
 
-  deploy_mainnet_insight:
-    name: Deploy mainnet insight to EKS
-    needs: build_and_push_image
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  # deploy_mainnet_insight:
+  #   name: Deploy mainnet insight to EKS
+  #   needs: build_and_push_image
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-southeast-1
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: ap-southeast-1
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+  #     - name: Login to Amazon ECR
+  #       id: login-ecr
+  #       uses: aws-actions/amazon-ecr-login@v1
 
-      - name: deploy insight
-        uses: kodermax/kubectl-aws-eks@1.0.7
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.AWS_MAINNET_KUBECONFIG }}
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
-        with:
-          args: set image -n main --record deployment/explorer-insight-deployment explorer-insight=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
+  #     - name: deploy insight
+  #       uses: kodermax/kubectl-aws-eks@1.0.7
+  #       env:
+  #         KUBE_CONFIG_DATA: ${{ secrets.AWS_MAINNET_KUBECONFIG }}
+  #         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  #         ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
+  #       with:
+  #         args: set image -n main --record deployment/explorer-insight-deployment explorer-insight=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
   
-      - name: verify insight deployment
-        uses: kodermax/kubectl-aws-eks@1.0.7
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.AWS_MAINNET_KUBECONFIG }}
-        with:
-          args: rollout status -n main deployment/explorer-insight-deployment
+  #     - name: verify insight deployment
+  #       uses: kodermax/kubectl-aws-eks@1.0.7
+  #       env:
+  #         KUBE_CONFIG_DATA: ${{ secrets.AWS_MAINNET_KUBECONFIG }}
+  #       with:
+  #         args: rollout status -n main deployment/explorer-insight-deployment
 
-  deploy_testnet_bitcore-node:
-    name: Deploy testnet bitcore-node to EKS
-    needs: build_and_push_image
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  # deploy_testnet_bitcore-node:
+  #   name: Deploy testnet bitcore-node to EKS
+  #   needs: build_and_push_image
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-southeast-1
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: ap-southeast-1
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+  #     - name: Login to Amazon ECR
+  #       id: login-ecr
+  #       uses: aws-actions/amazon-ecr-login@v1
 
-      - name: deploy core
-        uses: kodermax/kubectl-aws-eks@1.0.7
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.AWS_TESTNET_KUBECONFIG }}
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
-        with:
-          args: set image -n main --record deployment/explorer-core-deployment explorer-core=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
+  #     - name: deploy core
+  #       uses: kodermax/kubectl-aws-eks@1.0.7
+  #       env:
+  #         KUBE_CONFIG_DATA: ${{ secrets.AWS_TESTNET_KUBECONFIG }}
+  #         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  #         ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
+  #       with:
+  #         args: set image -n main --record deployment/explorer-core-deployment explorer-core=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
   
-      - name: verify core deployment
-        uses: kodermax/kubectl-aws-eks@1.0.7
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.AWS_TESTNET_KUBECONFIG }}
-        with:
-          args: rollout status -n main deployment/explorer-core-deployment
+  #     - name: verify core deployment
+  #       uses: kodermax/kubectl-aws-eks@1.0.7
+  #       env:
+  #         KUBE_CONFIG_DATA: ${{ secrets.AWS_TESTNET_KUBECONFIG }}
+  #       with:
+  #         args: rollout status -n main deployment/explorer-core-deployment
 
-  deploy_testnet_insight:
-    name: Deploy testnet insight to EKS
-    needs: build_and_push_image
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  # deploy_testnet_insight:
+  #   name: Deploy testnet insight to EKS
+  #   needs: build_and_push_image
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-southeast-1
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: ap-southeast-1
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+  #     - name: Login to Amazon ECR
+  #       id: login-ecr
+  #       uses: aws-actions/amazon-ecr-login@v1
 
-      - name: deploy insight
-        uses: kodermax/kubectl-aws-eks@1.0.7
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.AWS_TESTNET_KUBECONFIG }}
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
-        with:
-          args: set image -n main --record deployment/explorer-insight-deployment explorer-insight=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
+  #     - name: deploy insight
+  #       uses: kodermax/kubectl-aws-eks@1.0.7
+  #       env:
+  #         KUBE_CONFIG_DATA: ${{ secrets.AWS_TESTNET_KUBECONFIG }}
+  #         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  #         ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
+  #       with:
+  #         args: set image -n main --record deployment/explorer-insight-deployment explorer-insight=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
   
-      - name: verify insight deployment
-        uses: kodermax/kubectl-aws-eks@1.0.7
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.AWS_TESTNET_KUBECONFIG }}
-        with:
-          args: rollout status -n main deployment/explorer-insight-deployment
+  #     - name: verify insight deployment
+  #       uses: kodermax/kubectl-aws-eks@1.0.7
+  #       env:
+  #         KUBE_CONFIG_DATA: ${{ secrets.AWS_TESTNET_KUBECONFIG }}
+  #       with:
+  #         args: rollout status -n main deployment/explorer-insight-deployment
