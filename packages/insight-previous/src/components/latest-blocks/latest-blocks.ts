@@ -10,7 +10,7 @@ import { DefaultProvider } from '../../providers/default/default';
 import { Logger } from '../../providers/logger/logger';
 import { RedirProvider } from '../../providers/redir/redir';
 
-const BLOCK_AVERAGE_COUNT = 11;
+const BLOCK_MEDIAN_COUNT = 5;
 
 @Component({
   selector: 'latest-blocks',
@@ -66,15 +66,18 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
   }
 
   private processBlocks(blocks:AppBlock[]): AppBlock[] {
+    // return blocks.slice(0, this.numBlocks).map((block, i) => {
+    //   return {...block, medianTime: blocks.slice(i + 1, i + 1 + BLOCK_MEDIAN_COUNT).map(x => x.time)
+    //     .reduce((a, c) => a + c) / BLOCK_MEDIAN_COUNT };
+    // })
     return blocks.slice(0, this.numBlocks).map((block, i) => {
-      return {...block, medianTime: blocks.slice(i + 1, i + 1 + BLOCK_AVERAGE_COUNT).map(x => x.time)
-        .reduce((a, c) => a + c) / BLOCK_AVERAGE_COUNT };
+      return {...block, medianTime: blocks[i + BLOCK_MEDIAN_COUNT].time };
     })
   }
 
   private loadBlocks(): void {
     this.subscriber = this.blocksProvider
-      .getBlocks(this.numBlocks + BLOCK_AVERAGE_COUNT, this.showAnchoredBlocksButton)
+      .getBlocks(this.numBlocks + BLOCK_MEDIAN_COUNT, this.showAnchoredBlocksButton)
       .subscribe(
         response => {
           const blocks = this.processBlocks(response.map(block =>
@@ -102,7 +105,7 @@ export class LatestBlocksComponent implements OnInit, OnDestroy {
     const since: number =
       this.blocks.length > 0 ? this.blocks[this.blocks.length - 1].height : 0;
     return this.blocksProvider
-      .pageBlocks(since, this.numBlocks + BLOCK_AVERAGE_COUNT, this.showAnchoredBlocksButton)
+      .pageBlocks(since, this.numBlocks + BLOCK_MEDIAN_COUNT, this.showAnchoredBlocksButton)
       .subscribe(
         response => {
           const blocks = this.processBlocks(response.map(block =>
