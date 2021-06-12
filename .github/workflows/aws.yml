@@ -3,7 +3,7 @@ on:
   #   types: [created]
   push:
     branches:
-      - monstrobishi-patch-1
+      - devnet
 
 name: Deploy to Amazon EKS
 
