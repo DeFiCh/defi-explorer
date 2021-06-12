@@ -9,7 +9,7 @@ import { setIntervalSynchronous, roundingDown } from '../../utils/utility';
   templateUrl: 'about.html'
 })
 export class AboutComponent implements OnInit, OnDestroy {
-  public quickStats = { rewards: {}, supply: {}, blockHeight: '', chain: '' };
+  public quickStats = { burnInfo: {}, rewards: {}, supply: {}, blockHeight: '', chain: '' };
   public errorMessage;
   public loading = true;
   public network;
@@ -61,6 +61,7 @@ export class AboutComponent implements OnInit, OnDestroy {
       tokens: { supply },
       blockHeight,
       chain,
+      burnInfo,
       listCommunities
     } = resp;
 
@@ -80,6 +81,7 @@ export class AboutComponent implements OnInit, OnDestroy {
       supply,
       blockHeight,
       chain,
+      burnInfo,
       listCommunities: updatedListCommunities
     };
   }

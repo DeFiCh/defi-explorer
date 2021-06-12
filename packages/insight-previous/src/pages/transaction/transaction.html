@@ -71,6 +71,12 @@
               Unconfirmed
             </ion-note>
           </ion-item>
+          <ion-item>
+            Custom Transaction Info
+            <ion-note item-end>
+              <a href="https://dex.defichain.com/{{chainNetwork.network}}/tx/{{tx.txid}}">View on DEX explorer</a>
+            </ion-note>
+          </ion-item>
         </ion-list>
 
         <ng-container *ngIf="tx.isCustom">

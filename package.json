@@ -61,6 +61,6 @@
     "typescript-eslint-parser": "^15.0.0"
   },
   "dependencies": {
-    "bitcore-lib-dfi": "https://github.com/DeFiCh/bitcore-lib-dfi.git"
+    "bitcore-lib-dfi": "https://github.com/DeFiCh/bitcore-lib-dfi.git#dcbb81561e1ed3c79d7bf94f98fefa5e40443f92"
   }
 }

@@ -137,10 +137,9 @@ export class RPC {
     minConfs?: number,
     maxConfs?: number
   ): Promise<any> {
-    return this.asyncCall('spv_listanchors', [minBtcHeight, maxBtcHeight, minConfs, maxConfs]);
+    return this.asyncCall('listanchors', []);
   }
 }
-
 @LoggifyClass
 export class AsyncRPC {
   private rpc: RPC;

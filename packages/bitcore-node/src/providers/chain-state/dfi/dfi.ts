@@ -162,10 +162,10 @@ export class DFIStateProvider extends InternalStateProvider {
       if(!cache) {
         const data = await this.getRPC(chain, network).getAnchoredBlock();
         if(!data.length) res.sendStatus(404);
-        const updatedData = orderBy(data, 'defiBlockHeight', 'desc');
-        const lowerLimit = sinceBlock ?? +updatedData[updatedData.length - 1].defiBlockHeight - 1;
-        const filteredData = updatedData.filter(el => el.defiBlockHeight > lowerLimit && el.active).splice(0, +limit);
-        const uniqId = uniq(filteredData.map(item => item.defiBlockHeight));
+        const updatedData = orderBy(data, 'anchorHeight', 'desc');
+        const lowerLimit = sinceBlock ?? +updatedData[updatedData.length - 1].anchorHeight - 1;
+        const filteredData = updatedData.filter(el => el.anchorHeight > lowerLimit && el.active).splice(0, +limit);
+        const uniqId = uniq(filteredData.map(item => item.anchorHeight));
         const blockData = await BlockStorage.collection.find({height: {$in: uniqId}}).sort({
           height: -1
         }).toArray();
@@ -173,7 +173,7 @@ export class DFIStateProvider extends InternalStateProvider {
         blockData.forEach((item) => mergerObj[item.height] = item)
         const response = filteredData.map(item => ({
           ...item,
-          ...mergerObj[item.defiBlockHeight],
+          ...mergerObj[item.anchorHeight],
           btcTxHash: item.btcTxHash,
         }))
         await nodeCache.set(cacheName, response, CACHE_TTL_SECONDS);
