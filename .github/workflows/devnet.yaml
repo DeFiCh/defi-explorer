@@ -1,9 +1,9 @@
-on: push
-  # push:
-  #   branches:
-  #     - devnet
+on:
+  push:
+    branches:
+      - devnet
 
-name: Deploy to Amazon EKS
+name: Deploy to Amazon EKS Devnet
 
 jobs:
   build_and_push_image:
@@ -42,7 +42,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF##*/}
 
-  deploy_devnet_bitcore-node:
+  deploy_devnet_bitcore_node:
     name: Deploy devnet bitcore-node to EKS
     needs: build_and_push_image
     runs-on: ubuntu-latest
