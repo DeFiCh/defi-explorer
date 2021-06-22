@@ -1,7 +1,7 @@
-on:
-  push:
-    branches:
-      - devnet
+on: push
+  # push:
+  #   branches:
+  #     - devnet
 
 name: Deploy to Amazon EKS
 
